@@ -94,15 +94,20 @@ public:
     mbot_motor_command_t updateCommand(void) 
     {
         mbot_motor_command_t cmd {now(), 0.0, 0.0};
-        
+
+	if (odomTrace_.empty()){
+		printf("ODOM TRACE IS EMPTY!\n");
+	}
         if(!targets_.empty() && !odomTrace_.empty()) 
         {
             pose_xyt_t target = targets_.back();
             pose_xyt_t pose = currentPose();
+ 	    printf("CURRENT POSE: %f, %f, %f", pose.x, pose.y, pose.theta);
 
             ///////  TODO: Add different states when adding maneuver controls /////// 
             if(state_ == TURN)
-            { 
+            {
+		printf("IN STATE TURN \n"); 
                 if(turn_controller.target_reached(pose, target))
                 {
 		            state_ = DRIVE;
@@ -114,6 +119,7 @@ public:
             }
             else if(state_ == DRIVE) 
             {
+		printf("IN STATE DRIVE \n");
                 if(straight_controller.target_reached(pose, target))
                 {
                     if(!assignNextTarget())
@@ -130,7 +136,7 @@ public:
             {
                 std::cerr << "ERROR: MotionController: Entered unknown state: " << state_ << '\n';
             }
-		} 
+	} 
         return cmd; 
     }
 
@@ -239,20 +245,24 @@ private:
         lcmInstance->subscribe(SLAM_POSE_CHANNEL, &MotionController::handlePose, this);
         lcmInstance->subscribe(CONTROLLER_PATH_CHANNEL, &MotionController::handlePath, this);
         lcmInstance->subscribe(MBOT_TIMESYNC_CHANNEL, &MotionController::handleTimesync, this);
+	printf("SUBSCRIBED TO ALL CHANNELS\n");
     }
 };
 
 int main(int argc, char** argv)
 {
+    printf("STARTING MOTION CONTROLLER\n");
     lcm::LCM lcmInstance(MULTICAST_URL);
+    
     MotionController controller(&lcmInstance);
 
+    
     signal(SIGINT, exit);
     
     while(true)
     {
         lcmInstance.handleTimeout(50);  // update at 20Hz minimum
-
+	
     	if(controller.timesync_initialized()){
             	mbot_motor_command_t cmd = controller.updateCommand();
             	lcmInstance.publish(MBOT_MOTOR_COMMAND_CHANNEL, &cmd);

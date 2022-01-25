@@ -1,6 +1,7 @@
 LCM = lcm-gen
 LCMTYPES_NAMES := $(shell ls *.lcm)
 
+
 # Construct the pathnames to the C types
 LCMTYPES_C := $(LCMTYPES_NAMES:%.lcm=%.c)
 LCMTYPES_O = $(LCMTYPES_C:%.c=%.o)
