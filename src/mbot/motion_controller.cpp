@@ -15,7 +15,11 @@
 #include <iostream>
 #include <cassert>
 #include <signal.h>
+#include <unistd.h>
 #include "maneuver_controller.h"
+
+#include <rc/math.h>
+#include <rc/time.h>
 
 /////////////////////// TODO: /////////////////////////////
 /**
@@ -32,9 +36,14 @@
  */
 ///////////////////////////////////////////////////////////
 
-const float k_omega = 1.0;
+const float k_omega = 0.1;
 const float v_desired = 0.25;
 const float w_max = 3.14/4.0;
+
+float  max(float a, float b){
+	if (a >= b) return a;
+	else return b;
+}
 
 class StraightManeuverController : public ManeuverControllerBase
 {
@@ -47,20 +56,28 @@ public:
         float dx = target.x - pose.x;
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
-        float heading_error = angle_diff(target.theta, pose.theta);
+        float heading_error = angle_diff(pose.theta, target_heading);
+
+	float r = sqrt(dx*dx + dy*dy);
+	float R = 0.75;
+	
+	float r_sat = r;
+	if (r_sat > R) r_sat = R;
 
         // compute desired speed and heading
         float v = v_desired * cos(heading_error);
-        float w = - k_omega * heading_error;
+	v = 1.0 * (r_sat/R) * v;
+        float w = - 1.0 * heading_error;
         if (w >  w_max) w =  w_max;
         if (w < -w_max) w = -w_max;
 
-        return {0, v, w};
+	//printf("CURRENT POSE: %f, %f, %f, DES POSE: %f, %fTARGET: %f\n", pose.x, pose.y, pose.theta, target.x, target.y, target_heading);
+        
+	return {0, v, w};
     }
 
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
-        // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
         return ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1));
     }
 };
@@ -72,14 +89,21 @@ public:
     virtual mbot_motor_command_t get_command(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
 
-        // maybe correct for position errors too?
-
-        float heading_error = angle_diff(target.theta, pose.theta);
-        float w = k_omega * heading_error;
+	
+        float dx = target.x - pose.x;
+        float dy = target.y - pose.y;
+        float target_heading = atan2(dy, dx);
+        float heading_error = angle_diff(pose.theta, target_heading);
+        
+	
+	float w = -0.5 * heading_error;
         if (w > w_max) w = w_max;
         if (w < -w_max) w = -w_max;
 
-        return {0, 0, w};
+	
+	//printf("CURRENT POSE: %f, %f, %f, DES POSE: %f, %f, TARGET: %f HEADINGERR: %f\n", pose.x, pose.y, pose.theta, target.x, target.y, target_heading, heading_error);
+    
+	return {0, 0, w};
     }
 
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
@@ -87,9 +111,11 @@ public:
         float dx = target.x - pose.x;
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
-        return (fabs(angle_diff(pose.theta, target_heading)) < 0.07);
+        float heading_error = angle_diff(pose.theta, target_heading);
+        return (fabs(heading_error) < 0.07);
     }
 };
+
 
 class MotionController
 {
@@ -122,19 +148,24 @@ public:
         {
             printf("ODOM TRACE IS EMPTY!\n");
         }
-        if (!targets_.empty() && !odomTrace_.empty())
+	else{
+	//pose_xyt_t pose = currentPose();		
+        //printf("CURRENT POSE: %f, %f, %f\n", pose.x, pose.y, pose.theta);
+
+	}
+	if (!targets_.empty() && !odomTrace_.empty())
         {
             pose_xyt_t target = targets_.back();
             pose_xyt_t pose = currentPose();
-            printf("CURRENT POSE: %f, %f, %f", pose.x, pose.y, pose.theta);
 
             ///////  TODO: Add different states when adding maneuver controls ///////
             if (state_ == TURN)
             {
-                printf("IN STATE TURN \n");
+                printf("IN STATE TURN -  \n");
                 if (turn_controller.target_reached(pose, target))
                 {
                     state_ = DRIVE;
+		    sleep(1);
                 }
                 else
                 {
@@ -143,14 +174,15 @@ public:
             }
             else if (state_ == DRIVE)
             {
-                printf("IN STATE DRIVE \n");
+                printf("IN STATE DRIVE  - \n");
                 if (straight_controller.target_reached(pose, target))
                 {
                     if (!assignNextTarget())
                     {
                         std::cout << "\rTarget Reached!";
                     }
-                }
+                    sleep(1);
+		}
                 else
                 {
                     cmd = straight_controller.get_command(pose, target);
@@ -161,6 +193,7 @@ public:
                 std::cerr << "ERROR: MotionController: Entered unknown state: " << state_ << '\n';
             }
         }
+	//printf(" -  CMD: %f, %f\n", cmd.trans_v, cmd.angular_v);
         return cmd;
     }
 
