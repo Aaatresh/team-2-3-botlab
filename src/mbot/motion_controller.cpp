@@ -47,13 +47,24 @@ public:
         float dx = target.x - pose.x;
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
-        float heading_error = angle_diff(target.theta, pose.theta);
+        float heading_error = angle_diff(pose.theta, target_heading);
 
         // compute desired speed and heading
-        float v = v_desired * cos(heading_error);
+
+        // saturated pid
+        float r = sqrt(dx*dx + dy*dy);
+        float R = 1.0;
+        float r_sat = r/R;
+        if (r_sat >= 1.0) r_sat = 1.0;
+
+
+        float v = r_sat * v_desired * cos(heading_error);
+
         float w = - k_omega * heading_error;
         if (w >  w_max) w =  w_max;
         if (w < -w_max) w = -w_max;
+
+
 
         return {0, v, w};
     }
@@ -72,10 +83,13 @@ public:
     virtual mbot_motor_command_t get_command(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
 
-        // maybe correct for position errors too?
+        // calculate error in heading
+        float dx = target.x - pose.x;
+        float dy = target.y - pose.y;
+        float target_heading = atan2(dy, dx);
+        float heading_error = angle_diff(pose.theta, target_heading);
 
-        float heading_error = angle_diff(target.theta, pose.theta);
-        float w = k_omega * heading_error;
+        float w = -0.25 *  heading_error;
         if (w > w_max) w = w_max;
         if (w < -w_max) w = -w_max;
 
@@ -84,10 +98,12 @@ public:
 
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
+        // calculate error in heading
         float dx = target.x - pose.x;
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
-        return (fabs(angle_diff(pose.theta, target_heading)) < 0.07);
+        float heading_error = angle_diff(pose.theta, target_heading);
+        return (fabs(heading_error) < 0.2);
     }
 };
 
@@ -126,12 +142,10 @@ public:
         {
             pose_xyt_t target = targets_.back();
             pose_xyt_t pose = currentPose();
-            printf("CURRENT POSE: %f, %f, %f", pose.x, pose.y, pose.theta);
 
-            ///////  TODO: Add different states when adding maneuver controls ///////
             if (state_ == TURN)
             {
-                printf("IN STATE TURN \n");
+                // printf("IN STATE TURN \n");
                 if (turn_controller.target_reached(pose, target))
                 {
                     state_ = DRIVE;
@@ -143,7 +157,7 @@ public:
             }
             else if (state_ == DRIVE)
             {
-                printf("IN STATE DRIVE \n");
+                // printf("IN STATE DRIVE \n");
                 if (straight_controller.target_reached(pose, target))
                 {
                     if (!assignNextTarget())
