@@ -8,14 +8,15 @@ from lcmtypes import pose_xyt_t, robot_path_t
 lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
 
 
-L = 0.45
+L = 0.6
 # x, y, theta, where theta indicates the direction to be pointed when reaching waypoint
 waypoints = [
   (0,0,0),
   (L, 0, 0),
   (L, L, np.pi/2),
+  (L/2, L/2, np.pi/2),
   (0, L, np.pi),
-  # (0, 0, 1.5*np.pi)
+  (0, 0, 1.5*np.pi)
 ]
 
 # drive square, assuming robot starts at start

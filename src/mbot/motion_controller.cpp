@@ -32,8 +32,8 @@
  */
 ///////////////////////////////////////////////////////////
 
-const float k_omega = 1.0;
-const float v_desired = 0.25;
+const float k_omega = 1.5;
+const float v_desired = 0.6;
 const float w_max = 3.14/4.0;
 
 class StraightManeuverController : public ManeuverControllerBase
@@ -58,11 +58,13 @@ public:
         if (r_sat >= 1.0) r_sat = 1.0;
 
 
-        float v = r_sat * v_desired * cos(heading_error);
+        float v = r_sat * v_desired * cos(heading_error)*cos(heading_error);
 
         float w = - k_omega * heading_error;
         if (w >  w_max) w =  w_max;
         if (w < -w_max) w = -w_max;
+
+        // w = 0.0*w;
 
 
 
@@ -89,9 +91,14 @@ public:
         float target_heading = atan2(dy, dx);
         float heading_error = angle_diff(pose.theta, target_heading);
 
-        float w = -0.25 *  heading_error;
-        if (w > w_max) w = w_max;
-        if (w < -w_max) w = -w_max;
+        // float w = -2.0 *  heading_error;
+        // if (w > w_max) w = w_max;
+        // if (w < -w_max) w = -w_max;
+
+        float w = 0.0;
+
+        if (heading_error < -0.1) w = w_max;
+        if (heading_error > 0.1) w = -w_max;
 
         return {0, 0, w};
     }
@@ -103,7 +110,7 @@ public:
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
         float heading_error = angle_diff(pose.theta, target_heading);
-        return (fabs(heading_error) < 0.2);
+        return (fabs(heading_error) < 0.05);
     }
 };
 
