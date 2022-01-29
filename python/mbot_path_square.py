@@ -14,7 +14,7 @@ waypoints = [
   (0,0,0),
   (L, 0, 0),
   (L, L, np.pi/2),
-  (L/2, L/2, np.pi/2),
+  #(L/2, L/2, np.pi/2), # if you want to make it a M instead of a square
   (0, L, np.pi),
   (0, 0, 1.5*np.pi)
 ]

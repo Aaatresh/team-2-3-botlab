@@ -97,8 +97,16 @@ public:
 
         float w = 0.0;
 
-        if (heading_error < -0.1) w = w_max;
-        if (heading_error > 0.1) w = -w_max;
+        if (heading_error < -0.3){
+            w = w_max;
+        }
+        else if(heading_error > 0.3){
+            w = -w_max;
+        } 
+        else{
+            w = -2*heading_error;
+        }
+        
 
         return {0, 0, w};
     }
