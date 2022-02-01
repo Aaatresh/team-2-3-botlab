@@ -57,7 +57,7 @@ public:
 
         // compute desired speed and heading
 
-	
+	/*
         float r = sqrt(dx*dx + dy*dy);
 	float v = 0.0;
 	if (toggle < 3)
@@ -81,9 +81,9 @@ public:
 
         v = r_sat * v_desired * cos(heading_error)*cos(heading_error);
 	// v = 0.0;
-	}
+	}*/
 
-	/*
+	
         // saturated pid
         float r = sqrt(dx*dx + dy*dy);
         float R = 0.61;
@@ -91,7 +91,7 @@ public:
         if (r_sat >= 1.0) r_sat = 1.0;
 
         float v = r_sat * v_desired * cos(heading_error)*cos(heading_error);
-	*/
+	
 
 	printf("toggle: %d\tcurrent pose: %f\tr: %f\tv: %f\n", toggle, pose.x, r, v);
 
@@ -149,7 +149,7 @@ public:
 
         float w = 0.0;
 	
-	/*
+	
 	// works well for pi/4
         if (heading_error < -1){
             w = w_max;
@@ -159,7 +159,7 @@ public:
         } 
         else{
             w = -0.5 * heading_error;
-        }*/
+        }
 
 
 	/*
@@ -249,7 +249,7 @@ public:
 	}*/
 
 
-	
+	/*
 	if (toggle < 4)
 	{
 		if (heading_error < 0)
@@ -264,7 +264,7 @@ public:
 	else
 	{
 		w = -0.5 * heading_error;
-	}	
+	}*/	
 	
 
 	printf("toggle: %d\tw: %f\n", toggle, w);
