@@ -16,6 +16,7 @@
 #include <cassert>
 #include <signal.h>
 #include "maneuver_controller.h"
+#include <unistd.h>
 
 /////////////////////// TODO: /////////////////////////////
 /**
@@ -32,14 +33,19 @@
  */
 ///////////////////////////////////////////////////////////
 
-const float k_omega = 1.5;
-const float v_desired = 0.6;
-const float w_max = 3.14/4.0;
+const float k_omega = 0.7;
+const float v_desired = 0.8;
+const float w_max = 3.14;
+const float kw_p = 1.0;
+const float kw_d = 1.0;
 
 class StraightManeuverController : public ManeuverControllerBase
 {
 public:
     StraightManeuverController() = default;
+ 
+    int toggle = 0.0;
+
     virtual mbot_motor_command_t get_command(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
         
@@ -51,14 +57,43 @@ public:
 
         // compute desired speed and heading
 
+	
+        float r = sqrt(dx*dx + dy*dy);
+	float v = 0.0;
+	if (toggle < 3)
+	{
+        	v = 0.5 * v_desired * cos(heading_error)*cos(heading_error);
+		toggle++;
+	}
+	else if (toggle < 8)
+	{
+        	v = v_desired * cos(heading_error)*cos(heading_error);
+		toggle++;
+	}
+	else
+	{
         // saturated pid
         float r = sqrt(dx*dx + dy*dy);
-        float R = 1.0;
+	float R = 1.7;
+        float r_sat = r/R;
+        if (r_sat >= 1.0) r_sat = 1.0;
+	
+
+        v = r_sat * v_desired * cos(heading_error)*cos(heading_error);
+	// v = 0.0;
+	}
+
+	/*
+        // saturated pid
+        float r = sqrt(dx*dx + dy*dy);
+        float R = 0.61;
         float r_sat = r/R;
         if (r_sat >= 1.0) r_sat = 1.0;
 
-
         float v = r_sat * v_desired * cos(heading_error)*cos(heading_error);
+	*/
+
+	printf("toggle: %d\tcurrent pose: %f\tr: %f\tv: %f\n", toggle, pose.x, r, v);
 
         float w = - k_omega * heading_error;
         if (w >  w_max) w =  w_max;
@@ -71,10 +106,24 @@ public:
         return {0, v, w};
     }
 
+/*
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
         // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
         return ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1));
+    }
+*/
+
+    virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
+    {
+        // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
+        if ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1))
+	{
+		toggle = 0;
+		return 1;
+	}
+	else
+		return 0;
     }
 };
 
@@ -82,6 +131,9 @@ class TurnManeuverController : public ManeuverControllerBase
 {
 public:
     TurnManeuverController() = default;
+
+	float prev_heading_error;
+	int toggle = 0.0;
     virtual mbot_motor_command_t get_command(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
 
@@ -96,21 +148,135 @@ public:
         // if (w < -w_max) w = -w_max;
 
         float w = 0.0;
-
-        if (heading_error < -0.3){
+	
+	/*
+	// works well for pi/4
+        if (heading_error < -1){
             w = w_max;
         }
-        else if(heading_error > 0.3){
+        else if(heading_error > 1){
             w = -w_max;
         } 
         else{
-            w = -2*heading_error;
-        }
-        
+            w = -0.5 * heading_error;
+        }*/
 
+
+	/*
+	// works well for pi/4 on my table
+        if (heading_error < -1){
+            w = w_max;
+        }
+        else if(heading_error > 1){
+            w = -w_max;
+        } 
+        else{
+            w = -1.5 * heading_error;
+        }*/
+
+	
+	/*
+	if (fabs(heading_error) > 1.4)
+	{
+		w = -(kw_p * heading_error + kw_d * (heading_error - prev_heading_error));
+		prev_heading_error = heading_error;
+	}
+	else
+		w = -0.5 * heading_error;
+	*/
+
+	/* This works for pi rad/s
+	if(heading_error > 1.0)
+	{	
+		if(toggle == 0)
+		{	
+			w = -w_max;
+			toggle = 1;
+			usleep(1000);
+		}
+		else
+		{
+			w = 0.0;
+			toggle = 0;
+			usleep(10000);
+		}	
+	}
+	else if(heading_error < -1.0)
+	{	
+		if(toggle == 0)
+		{	
+			w = w_max;
+			toggle = 1;
+			usleep(1000);
+		}
+		else
+		{
+			w = 0.0;
+			toggle = 0;
+			usleep(10000);
+		}	
+	}
+	else
+		w = -0.5 * heading_error;
+	*/
+
+	/*
+	if (toggle < 2)
+	{
+		if (heading_error < 0)
+			w = w_max / 2.0;
+		else 
+			w = -w_max / 2.0;
+		
+		// usleep(1000);
+
+		toggle++;
+	}
+	if (toggle < 6)
+	{
+		if (heading_error < 0)
+			w = w_max;
+		else 
+			w = -w_max;
+		
+		// usleep(1000);
+
+		toggle++;
+	}
+	else
+	{
+		w = -0.5 * heading_error;
+	}*/
+
+
+	
+	if (toggle < 4)
+	{
+		if (heading_error < 0)
+			w = w_max;
+		else 
+			w = -w_max;
+		
+		// usleep(1000);
+
+		toggle++;
+	}
+	else
+	{
+		w = -0.5 * heading_error;
+	}	
+	
+
+	printf("toggle: %d\tw: %f\n", toggle, w);
+
+	// printf("heading error: %f\n", heading_error);
+	// printf("w after processing: %f\n", w); 
+	// printf("**************************************");
+        
         return {0, 0, w};
     }
 
+/*
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
         // calculate error in heading
@@ -119,6 +285,25 @@ public:
         float target_heading = atan2(dy, dx);
         float heading_error = angle_diff(pose.theta, target_heading);
         return (fabs(heading_error) < 0.05);
+    }
+*/
+
+    virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
+    {
+        // calculate error in heading
+        float dx = target.x - pose.x;
+        float dy = target.y - pose.y;
+        float target_heading = atan2(dy, dx);
+        float heading_error = angle_diff(pose.theta, target_heading);
+	
+	if (fabs(heading_error) < 0.05)
+	{
+		toggle = 0;
+		return 1;
+	}        
+	else
+		return 0;
+
     }
 };
 
