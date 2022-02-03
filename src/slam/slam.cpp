@@ -198,6 +198,7 @@ void OccupancyGridSLAM::runSLAMIteration(void)
     {
         updateLocalization();
         updateMap();
+        // printf("HERE\n");
     }
     else 
     {
@@ -277,6 +278,7 @@ void OccupancyGridSLAM::updateMap(void)
     {
         // Process the map
         mapper_.updateMap(currentScan_, currentPose_, map_);
+        // printf("Updated!\n");
         haveMap_ = true;
     }
 
@@ -286,7 +288,8 @@ void OccupancyGridSLAM::updateMap(void)
     {
         auto mapMessage = map_.toLCM();
         lcm_.publish(SLAM_MAP_CHANNEL, &mapMessage);
-        //map_.saveToFile("current.map");
+        // map_.saveToFile("current.map");
+        // printf("SAVED!\n");
 
     }
 

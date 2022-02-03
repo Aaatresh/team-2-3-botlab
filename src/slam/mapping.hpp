@@ -2,6 +2,7 @@
 #define SLAM_MAPPING_HPP
 
 #include <lcmtypes/pose_xyt_t.hpp>
+#include <lcmtypes/lidar_t.hpp>
 #include <cstdint>
 
 class OccupancyGrid;
@@ -31,6 +32,8 @@ public:
     * \param    map             OccupancyGrid instance to be updated
     */
     void updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGrid& map);
+    void insertRayCells(int x0, int y0, int x1, int y1, bool end_obstacle, OccupancyGrid& map);
+    void updateOdds(OccupancyGrid& map, int x, int y, bool occupied);
 
 private:
     
