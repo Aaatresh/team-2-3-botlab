@@ -9,8 +9,10 @@ lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
 
 
 L = 0.61
+# L = 0.30
 # x, y, theta, where theta indicates the direction to be pointed when reaching waypoint
 waypoints = [
+  (0, 0, 0),
   (L, 0, 0),
   (L, -L, -np.pi/2),
   (2*L, -L, 0),
