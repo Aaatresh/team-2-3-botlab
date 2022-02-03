@@ -15,8 +15,12 @@
 #include <iostream>
 #include <cassert>
 #include <signal.h>
+#include <unistd.h>
 #include "maneuver_controller.h"
 #include <unistd.h>
+
+#include <rc/math.h>
+#include <rc/time.h>
 
 /////////////////////// TODO: /////////////////////////////
 /**
@@ -38,6 +42,11 @@ const float v_desired = 0.8;
 const float w_max = 3.14;
 const float kw_p = 1.0;
 const float kw_d = 1.0;
+
+float  max(float a, float b){
+	if (a >= b) return a;
+	else return b;
+}
 
 class StraightManeuverController : public ManeuverControllerBase
 {
@@ -109,7 +118,6 @@ public:
 /*
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
-        // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
         return ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1));
     }
 */
@@ -307,6 +315,7 @@ public:
     }
 };
 
+
 class MotionController
 {
 public:
@@ -338,7 +347,12 @@ public:
         {
             printf("ODOM TRACE IS EMPTY!\n");
         }
-        if (!targets_.empty() && !odomTrace_.empty())
+	else{
+	//pose_xyt_t pose = currentPose();		
+        //printf("CURRENT POSE: %f, %f, %f\n", pose.x, pose.y, pose.theta);
+
+	}
+	if (!targets_.empty() && !odomTrace_.empty())
         {
             pose_xyt_t target = targets_.back();
             pose_xyt_t pose = currentPose();
@@ -349,6 +363,7 @@ public:
                 if (turn_controller.target_reached(pose, target))
                 {
                     state_ = DRIVE;
+		    sleep(1);
                 }
                 else
                 {
@@ -364,7 +379,8 @@ public:
                     {
                         std::cout << "\rTarget Reached!";
                     }
-                }
+                    sleep(1);
+		}
                 else
                 {
                     cmd = straight_controller.get_command(pose, target);
@@ -375,6 +391,7 @@ public:
                 std::cerr << "ERROR: MotionController: Entered unknown state: " << state_ << '\n';
             }
         }
+	//printf(" -  CMD: %f, %f\n", cmd.trans_v, cmd.angular_v);
         return cmd;
     }
 
