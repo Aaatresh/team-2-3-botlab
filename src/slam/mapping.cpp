@@ -18,16 +18,28 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
 {
     //////////////// TODO: Implement your occupancy grid algorithm here ///////////////////////
 
+    if (!initialised_previous_pose){
+        previous_pose_x_ = pose.x;
+        previous_pose_y_ = pose.y;
+        previous_pose_theta_ = pose.theta;
+        previous_pose_utime_ = pose.utime;
+        initialised_previous_pose = true;
+    }
+
+
     // printf("RECEIVED NEW SCAN!\n");
     printf("New Pose: %f, %f, %f", pose.x, pose.y, pose.theta);
 
     // interpolate
-    MovingLaserScan adj_scan = MovingLaserScan(scan,pose, pose, 1);
+    pose_xyt_t prevPose = {previous_pose_utime_, previous_pose_x_, previous_pose_y_, previous_pose_theta_};
+    // MovingLaserScan adj_scan = MovingLaserScan(scan,previous_pose_, pose, 1);
+    MovingLaserScan adj_scan = MovingLaserScan(scan, prevPose, pose, 1);
     
-    // int x0 = map.pos_to_cell_x(pose.x);
-    // int y0 = map.pos_to_cell_y(pose.y);
-
-    // printf("%f, %f : %d, %d", pose.x, pose.y, x0, y0);
+    // save current pose to old pose
+    previous_pose_x_ = pose.x;
+    previous_pose_y_ = pose.y;
+    previous_pose_theta_ = pose.theta;
+    previous_pose_utime_ = pose.utime;
 
     for (size_t n=0; n<adj_scan.size(); n++){
 
