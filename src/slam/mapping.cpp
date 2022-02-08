@@ -16,30 +16,28 @@ Mapping::Mapping(float maxLaserDistance, int8_t hitOdds, int8_t missOdds)
 
 void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGrid& map)
 {
-    //////////////// TODO: Implement your occupancy grid algorithm here ///////////////////////
 
     if (!initialised_previous_pose){
-        previous_pose_x_ = pose.x;
-        previous_pose_y_ = pose.y;
-        previous_pose_theta_ = pose.theta;
-        previous_pose_utime_ = pose.utime;
+        previous_pose_.x = pose.x;
+        previous_pose_.y = pose.y;
+        previous_pose_.theta = pose.theta;
+        previous_pose_.utime = pose.utime;
         initialised_previous_pose = true;
     }
-
-
     // printf("RECEIVED NEW SCAN!\n");
-    printf("New Pose: %f, %f, %f", pose.x, pose.y, pose.theta);
+    // printf("Previous Pose: %f, %f, %f", previous_pose_.x, previous_pose_.y, previous_pose_.theta);
+    // printf("New Pose: %f, %f, %f \n", pose.x, pose.y, pose.theta);
 
-    // interpolate
-    pose_xyt_t prevPose = {previous_pose_utime_, previous_pose_x_, previous_pose_y_, previous_pose_theta_};
     // MovingLaserScan adj_scan = MovingLaserScan(scan,previous_pose_, pose, 1);
-    MovingLaserScan adj_scan = MovingLaserScan(scan, prevPose, pose, 1);
+    MovingLaserScan adj_scan = MovingLaserScan(scan, previous_pose_, pose, 1);
     
+    // printf("done!");
     // save current pose to old pose
-    previous_pose_x_ = pose.x;
-    previous_pose_y_ = pose.y;
-    previous_pose_theta_ = pose.theta;
-    previous_pose_utime_ = pose.utime;
+    previous_pose_.x = pose.x;
+    previous_pose_.y = pose.y;
+    previous_pose_.theta = pose.theta;
+    previous_pose_.utime = pose.utime;
+        
 
     for (size_t n=0; n<adj_scan.size(); n++){
 
@@ -55,19 +53,9 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
         int y0 = map.pos_to_cell_y(pos_y0);
         int x1 = map.pos_to_cell_x(pos_x1);
         int y1 = map.pos_to_cell_y(pos_y1);
-
-        // printf("%f, %f : %d, %d\n", pos_x1, pos_y1, x1, y1);
         
         Mapping::insertRayCells(x0,y0,x1,y1, true, map);
     }
-
-    // printf("DONE INSERTING!");
-    std::cout << std::endl;
-
-    
-    
-    map.saveToFile("current.map");
-    // printf("SAVED!");
 
     return;
 
