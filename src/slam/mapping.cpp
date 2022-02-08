@@ -18,33 +18,29 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
 {
     //////////////// TODO: Implement your occupancy grid algorithm here ///////////////////////
 
-    // printf("IM BEING CALLED!\n");
-    // printf("%d", map.heightInCells());
+    // printf("RECEIVED NEW SCAN!\n");
+    printf("New Pose: %f, %f, %f", pose.x, pose.y, pose.theta);
 
-    // printf("%ld\n", scan.num_ranges);
-
-    // printf("*** SCAN START *** \n");
-    // for (int32_t i=0; i < scan.num_ranges; i++){
-    //     printf("%f\n", scan.ranges[i]);
-    // }
-    // printf("\n");
-
-    // insertRay()
-
-    printf("RECEIVED NEW SCAN!\n");
-
-    // printf("%d, %d", Mapping::kHitOdds_, Mapping::kMissOdds_);
+    // interpolate
+    MovingLaserScan adj_scan = MovingLaserScan(scan,pose, pose, 1);
     
-    int x0 = map.pos_to_cell_x(pose.x);
-    int y0 = map.pos_to_cell_y(pose.y);
+    // int x0 = map.pos_to_cell_x(pose.x);
+    // int y0 = map.pos_to_cell_y(pose.y);
 
     // printf("%f, %f : %d, %d", pose.x, pose.y, x0, y0);
 
-    for (int32_t n=0; n<scan.num_ranges; n++){
+    for (size_t n=0; n<adj_scan.size(); n++){
 
-        float pos_x1 = scan.ranges[n] * cos(scan.thetas[n]);
-        float pos_y1 = scan.ranges[n] * sin(scan.thetas[n]);
+        float pos_x0 = adj_scan[n].origin.x;
+        float pos_y0 = adj_scan[n].origin.y;
 
+
+        float pos_x1 = pos_x0 + adj_scan[n].range * cos(adj_scan[n].theta);
+        float pos_y1 = pos_y0 + adj_scan[n].range * sin(adj_scan[n].theta);
+
+
+        int x0 = map.pos_to_cell_x(pos_x0);
+        int y0 = map.pos_to_cell_y(pos_y0);
         int x1 = map.pos_to_cell_x(pos_x1);
         int y1 = map.pos_to_cell_y(pos_y1);
 
@@ -53,13 +49,13 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
         Mapping::insertRayCells(x0,y0,x1,y1, true, map);
     }
 
-    printf("DONE INSERTING!");
+    // printf("DONE INSERTING!");
     std::cout << std::endl;
 
     
-
+    
     map.saveToFile("current.map");
-    printf("SAVED!");
+    // printf("SAVED!");
 
     return;
 
