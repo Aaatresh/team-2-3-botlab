@@ -192,6 +192,9 @@ public:
     * \return   True if the map is successfully loaded. False if the file can't be opened or some other I/O error occurs.
     */
     bool loadFromFile(const std::string& filename);
+
+    int pos_to_cell_x(float pos_x);
+    int pos_to_cell_y(float pox_y);
     
 private:
     
@@ -206,6 +209,11 @@ private:
     
     // Convert between cells and the underlying vector index
     int cellIndex(int x, int y) const { return y*width_ + x; }
+
+    
+
+    float cell_to_pos_x(int cell_x);
+    float cell_to_pos_y(int cell_y);
 };
 
 #endif // MAPPING_OCCUPANCY_GRID_HPP

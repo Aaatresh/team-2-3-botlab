@@ -2,6 +2,7 @@
 #define SLAM_MAPPING_HPP
 
 #include <lcmtypes/pose_xyt_t.hpp>
+#include <lcmtypes/lidar_t.hpp>
 #include <cstdint>
 
 class OccupancyGrid;
@@ -31,12 +32,21 @@ public:
     * \param    map             OccupancyGrid instance to be updated
     */
     void updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGrid& map);
+    void insertRayCells(int x0, int y0, int x1, int y1, bool end_obstacle, OccupancyGrid& map);
+    void updateOdds(OccupancyGrid& map, int x, int y, bool occupied);
 
 private:
     
     const float  kMaxLaserDistance_;
     const int8_t kHitOdds_;
     const int8_t kMissOdds_;
+    pose_xyt_t previous_pose_;
+    // float previous_pose_x_;
+    // float previous_pose_y_;
+    // float previous_pose_theta_;
+    // int64_t previous_pose_utime_;
+    bool initialised_previous_pose=false;
+    
     
     //////////////////// TODO: Add any private members needed for your occupancy grid mapping algorithm ///////////////
 };

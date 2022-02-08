@@ -19,9 +19,6 @@
 #include "maneuver_controller.h"
 #include <unistd.h>
 
-#include <rc/math.h>
-#include <rc/time.h>
-
 /////////////////////// TODO: /////////////////////////////
 /**
  * Code below is a little more than a template. You will need

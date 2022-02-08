@@ -173,3 +173,19 @@ bool OccupancyGrid::loadFromFile(const std::string& filename)
     
     return true;
 }
+
+
+int OccupancyGrid::pos_to_cell_x(float pos_x){
+    // pos_x is in meters
+    // TODO: CHECK IF THIS IS REASONABLE
+    return int((pos_x - globalOrigin_.x ) * cellsPerMeter_);
+}
+int OccupancyGrid::pos_to_cell_y(float pos_y){
+    // pos_x is in meters
+    // TODO: CHECK IF THIS IS REASONABLE
+    return int((pos_y - globalOrigin_.y ) * cellsPerMeter_);
+}
+
+// float cell_to_pos_x(int cell_x);
+// float cell_to_pos_y(int cell_y);
+
