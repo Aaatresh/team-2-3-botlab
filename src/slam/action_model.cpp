@@ -27,17 +27,23 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     double dx = odometry.x - prevOdom_.x;
     double dy = odometry.y - prevOdom_.y;
     double dth = angle_diff(odometry.theta, prevOdom_.theta);
+    float direction = 1.0;
+
+    trans_= sqrt(dx*dx + dy*dy);
+    rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
+    rot2_ = angle_diff(dth, rot1_);
+    if (std::abs(dth) >= M_PI / 2.0){
+        rot1_ = angle_diff(M_PI - dth);
+        direction = -1.0;
+    }
+    trans *= direction;
 
     moved_ = (dx != 0.0) && (dy != 0.0) && (dth != 0.0);
 
-    if (moved_){
-        trans_= sqrt(dx*dx + dy*dy);
-        rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
-        rot2_ = angle_diff(dth, rot1_);
-	
-	rot1Std_ = sqrt(k1_ * std::abs(rot1_));
-	rot2Std_ = sqrt(k1_ * std::abs(rot2_));
-	transStd_ = sqrt(k2_ * std::abs(trans_));
+    if (moved_){	
+        rot1Std_ = sqrt(k1_ * std::abs(rot1_));
+        rot2Std_ = sqrt(k1_ * std::abs(rot2_));
+        transStd_ = sqrt(k2_ * std::abs(trans_));
     }
 
     prevOdom_ = odometry;
