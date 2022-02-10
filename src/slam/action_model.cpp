@@ -35,9 +35,9 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
         rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
         rot2_ = angle_diff(dth, rot1_);
 	
-	rot1Std_ = k1_ * std::abs(rot1_);
-	rot2Std_ = k1_ * std::abs(rot2_);
-	transStd_ = k2_ * std::abs(trans_);
+	rot1Std_ = sqrt(k1_ * std::abs(rot1_));
+	rot2Std_ = sqrt(k1_ * std::abs(rot2_));
+	transStd_ = sqrt(k2_ * std::abs(trans_));
     }
 
     prevOdom_ = odometry;
