@@ -7,32 +7,47 @@
 
 
 ActionModel::ActionModel(void)
+	: k1_(0.01f),
+	k2_(0.01f),
+	moved_(false),
+	initialised_(false)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
-    std::random_device rd;
+    // set up random numebr generator
 
-    numGen_ = std::mt19937 (rd());
+    printf("INITIALISED!");
+    std::cout << std::endl;
+    std::random_device rd;
+    printf("HEREEE");
+    std::cout << std::endl;
+    numGen_ = std::mt19937(rd());
+   printf("HERE!");
+   std::cout << std::endl; 
 }
 
 
 bool ActionModel::updateAction(const pose_xyt_t& odometry)
 {
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
-    
-    if (!initialised_){
-	 prevOdom_ = odometry;
+    printf("HSF");
+    std::cout << std::endl;
+
+    return false;
+
+	if (!initialised_){
+	 previousOdometry_ = odometry;
          initialised_ = true;
     }
 
-    double dx = odometry.x - prevOdom_.x;
-    double dy = odometry.y - prevOdom_.y;
-    double dth = angle_diff(odometry.theta, prevOdom_.theta);
+    double dx = odometry.x - previousOdometry_.x;
+    double dy = odometry.y - previousOdometry_.y;
+    double dth = angle_diff(odometry.theta, previousOdometry_.theta);
 
     moved_ = (dx != 0.0) && (dy != 0.0) && (dth != 0.0);
 
     if (moved_){
         trans_= sqrt(dx*dx + dy*dy);
-        rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
+        rot1_ = angle_diff(std::atan2(dy, dx), previousOdometry_.theta);
         rot2_ = angle_diff(dth, rot1_);
 	
 	rot1Std_ = k1_ * std::abs(rot1_);
@@ -40,10 +55,11 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
 	transStd_ = k2_ * std::abs(trans_);
     }
 
-    prevOdom_ = odometry;
-    utime_ = odometry.utime;
+    printf("sdfsdc");
+    std::cout << std::endl;
 
     return moved_;
+
 }
 
 
@@ -52,7 +68,14 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
 
+   // create a new sample
+   // using the std devs 
+   // set parent pose to current sample
 
+return sample;
+
+printf("SDF!");
+std::cout << std::endl;
    std::normal_distribution<float> d1(0.0, rot1Std_);
    std::normal_distribution<float> d2(0.0, transStd_);
    std::normal_distribution<float> d3(0.0, rot2Std_);
@@ -66,12 +89,8 @@ particle_t ActionModel::applyAction(const particle_t& sample)
    newSample.pose.x += (trans_+e2) * std::cos(sample.pose.theta + rot1_ + e1);
    newSample.pose.y += (trans_+e2) * std::sin(sample.pose.theta + rot1_ + e1);
    newSample.pose.theta += rot1_ + rot2_ + e1 + e3;
-   newSample.pose.utime = utime_;
-   newSample.pose.theta = wrap_to_pi(newSample.pose.theta);
-
 
    newSample.parent_pose = sample.pose;
 
     return newSample;
-
 }
