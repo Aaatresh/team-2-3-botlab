@@ -87,6 +87,11 @@ std::vector<particle_t> ParticleFilter::computeProposalDistribution(const std::v
 {
     //////////// TODO: Implement your algorithm for creating the proposal distribution by sampling from the ActionModel
     std::vector<particle_t> proposal;
+
+    for(auto& p:prior){
+	    proposal.push_back(actionModel_.applyAction(p));
+    }
+
     return proposal;
 }
 
