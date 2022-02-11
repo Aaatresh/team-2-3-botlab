@@ -22,8 +22,8 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
     for (size_t i=0; i<=movingScan.size(); i++){
     // for (auto&ray : movingScan){
         // compute ray score
-        return 0.0;
-        // scanScore += scoreRay(movingScan[i], map);
+        // return 0.0;
+        scanScore += scoreRay(movingScan[i], map);
     }
     
     return std::exp(scanScore);
