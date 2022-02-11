@@ -27,7 +27,7 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
     return std::exp(scanScore);
 }
 
-double scoreRay(adjusted_ray_t& ray, OccupancyGrid& map){
+double SensorModel::scoreRay(adjusted_ray_t& ray, OccupancyGrid& map){
  
     double s_too_near = -8;
     double s_correct = -4;
@@ -65,7 +65,7 @@ double scoreRay(adjusted_ray_t& ray, OccupancyGrid& map){
 }
 
 
-double get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
+double SensorModel::get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
 
     // breshenham
     
