@@ -16,8 +16,12 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
     ///////////// TODO: Implement your sensor model for calculating the likelihood of a particle given a laser scan //////////
 
     double scanScore = 0.0;
-    int rayStride = 2;
+    int rayStride = 20;
+
+    
     MovingLaserScan movingScan(scan, sample.parent_pose, sample.pose, rayStride);
+
+    // std::cout << "NUM RAYS: " << scan.ranges.size() << " AFTER SAMPLING: " << movingScan.size() << std::endl;
 
     // for (size_t i=0; i<=movingScan.size(); i++){
     for (auto&ray : movingScan){
@@ -42,11 +46,13 @@ double SensorModel::scoreRay(adjusted_ray_t ray, OccupancyGrid map){
     int y1 = map.pos_to_cell_y(end_y);
 
     // get occupancy of (x1,y1)
-    return map.logOdds(x1,y1);
-    // bool occ = map.isOccupied(x1, y1);
+    // return map.logOdds(x1,y1);
+    bool occ = map.isOccupied(x1, y1);
 
-    // if (occ) return 1.0;
-    // else return 0.0;
+    if (occ){
+        return 1.0;
+    }
+    return 0.0;
 
 }
 
