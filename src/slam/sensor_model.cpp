@@ -17,14 +17,13 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
 
     double scanScore = 0.0;
     int rayStride = 10;
-    MovingLaserScan movingScan(scan, sample.parent_pose, same.pose, rayStride);
+    MovingLaserScan movingScan(scan, sample.parent_pose, sample.pose, rayStride);
 
     for (const auto&ray : movingScan){
         // compute ray score
-
         scanScore += scoreRay(ray, map);
-
-    }    
+    }
+    
     return scanScore;
 }
 
@@ -34,22 +33,81 @@ double scoreRay(adjusted_ray& ray, OccupancyGrid& map){
     float s_correct = -4;
     float s_too_far = -12;
 
-    double d = get_dist_from_map(ray, map);
-    float thresh = map.metersPerCell_; # meters
-    if (ray.range <= d - thresh){
+
+    // create expected endpoint from the ray
+    // step using brensham from origin to expected endpoint
+    // check if occupied for each cell along this ray
+    // determine if early or late
+
+    double threshold = 2*Mapping::metersPerCell();
+
+    Point<double> origin  = ray.origin;
+    double ex = ray.origin.x + (ray.range+threshold) * std::cos(ray.theta);
+    double ey = ray.origin.y + (ray.range+threshold) * std::sin(ray.theta);
+    Point<double> endPoint(ex, ey);
+
+    int x0 = Mapping::pos_to_cell_x(origin.x);
+    int x1 = Mapping::pos_to_cell_x(endPoint.x);
+    int y0 = Mapping::pos_to_cell_y(origin.y);
+    int y1 = Mapping::pos_to_cell_y(endPoint.y);
+
+    // start breshenham
+    double dist_to_wall = get_dist_to_wall(x0, x1, y0, y1, map);
+
+    if (ray.range <= dist_to_wall - threshold){
         return s_too_near;
     }
-    if (ray.range >= d + thresh){
+    if (ray.range >= dist_to_wall + threshold){
         return s_too_far;
     }
+
     return s_correct;
 }
 
 
-double get_dist_from_map(adjusted_ray_t ray, OccupancyGrid& map){
+double get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
 
+    // breshenham
     
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
 
+    int sx = x0 < x1 ? 1 : -1;
+    int sy = y0 < y1 ? 1 : -1;
+
+    int err = dx - dy;
+
+    int x = x0;
+    int y = y0;
+
+    while ((x != x1 ) || (y != y1)) {
+        // check if cell is free
+
+        if (!map.isCellInGrid(x, y)){
+            break;
+        }
+
+        if (map.isOccupied(x, y))
+            break;
+        }
+
+        int e2 = 2 * err;
+        if (e2 >= - dy){
+            err -= dy;
+            x += sx;
+        }
+        if (e2 <= dx){
+            err += dx;
+            y += sy;
+        }
+    
+    }
+
+    float DeltaX = map.metersPerCell() * (x-x0);
+    float DeltaY = map.metersPerCell() * (y-y0);
+
+    return std::sqrt(DeltaX*DeltaX + DeltaY*DeltaY);
+    
 }
 
 
