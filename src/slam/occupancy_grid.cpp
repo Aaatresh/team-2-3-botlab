@@ -59,8 +59,8 @@ bool OccupancyGrid::isCellInGrid(int x, int y) const
     return xCoordIsValid && yCoordIsValid;
 }
 
-bool isOccupied(int x, int y) {
-    CellOdds o = map.logOdds(x, y);
+bool OccupancyGrid::isOccupied(int x, int y) {
+    CellOdds o = logOdds(x, y);
 
     if (o > 0){
         return true;
