@@ -57,16 +57,18 @@ private:
     
     ////////// TODO: Add private member variables needed for you implementation ///////////////////
 
-    const float k1_ = 0.01f;
-    const float k2_ = 0.01f;
+    // const float k1_ = 0.005f;
+    // const float k2_ = 0.01f;
+    const float k1_;
+    const float k2_;
 
     pose_xyt_t prevOdom_;
     double rot1_;
     double rot2_;
     double trans_;
 
-    bool moved_ = false;
-    bool initialised_ = false;
+    bool moved_;
+    bool initialised_;
 
     int64_t utime_;
 
