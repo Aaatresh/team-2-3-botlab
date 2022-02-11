@@ -24,14 +24,14 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
         scanScore += scoreRay(ray, map);
     }
     
-    return scanScore;
+    return std::exp(scanScore);
 }
 
 double scoreRay(adjusted_ray& ray, OccupancyGrid& map){
  
-    float s_too_near = -8;
-    float s_correct = -4;
-    float s_too_far = -12;
+    double s_too_near = -8;
+    double s_correct = -4;
+    double s_too_far = -12;
 
 
     // create expected endpoint from the ray
@@ -42,8 +42,8 @@ double scoreRay(adjusted_ray& ray, OccupancyGrid& map){
     double threshold = 2*Mapping::metersPerCell();
 
     Point<double> origin  = ray.origin;
-    double ex = ray.origin.x + (ray.range+threshold) * std::cos(ray.theta);
-    double ey = ray.origin.y + (ray.range+threshold) * std::sin(ray.theta);
+    double ex = ray.origin.x + (ray.range+2*threshold) * std::cos(ray.theta);
+    double ey = ray.origin.y + (ray.range+2*threshold) * std::sin(ray.theta);
     Point<double> endPoint(ex, ey);
 
     int x0 = Mapping::pos_to_cell_x(origin.x);

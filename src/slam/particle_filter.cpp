@@ -158,5 +158,24 @@ pose_xyt_t ParticleFilter::estimatePosteriorPose(const std::vector<particle_t>& 
 {
     //////// TODO: Implement your method for computing the final pose estimate based on the posterior distribution
     pose_xyt_t pose;
+
+    // SIMPLE AVERAGE
+
+    double mean_x = 0.0;
+    double mean_y = 0.0;
+    double mean_cos = 0.0;
+    double mean_sin = 0.0;
+
+    for (auto &p : posterior){
+        mean_x += p.pose.x * p.weight;
+        mean_y += p.pose.y * p.weight;
+        mean_cos += std::cos(p.pose.theta) * p.weight;
+        mean_sin += std::sin(p.pose.theta) * p.weight;
+    }
+
+    pose.x = mean_x;
+    pose.y = mean_y;
+    pose.theta = std::atan2(mean_sin, mean_cos);
+    
     return pose;
 }
