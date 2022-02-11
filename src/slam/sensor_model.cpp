@@ -26,90 +26,110 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
         scanScore += scoreRay(ray, map);
     }
     
-    return std::exp(scanScore);
+    return scanScore;
 }
 
 double SensorModel::scoreRay(adjusted_ray_t ray, OccupancyGrid map){
+    // this is the method by gaskell
+
+    // find the endpoint
+    double end_x = ray.origin.x + ray.range * std::cos(ray.theta);
+    double end_y = ray.origin.y + ray.range * std::sin(ray.theta);
+
+    // convert to end_cell
+
+    int x1 = map.pos_to_cell_x(end_x);
+    int y1 = map.pos_to_cell_y(end_y);
+
+    // get occupancy of (x1,y1)
+    bool occ = map.isOccupied(x1, y1);
+
+    if (occ) return 1.0;
+    else return 0.0;
+
+}
+
+// double SensorModel::scoreRay(adjusted_ray_t ray, OccupancyGrid map){
  
-    double s_too_near = -8;
-    double s_correct = -4;
-    double s_too_far = -12;
+//     double s_too_near = -8;
+//     double s_correct = -4;
+//     double s_too_far = -12;
 
 
-    // create expected endpoint from the ray
-    // step using brensham from origin to expected endpoint
-    // check if occupied for each cell along this ray
-    // determine if early or late
+//     // create expected endpoint from the ray
+//     // step using brensham from origin to expected endpoint
+//     // check if occupied for each cell along this ray
+//     // determine if early or late
 
-    double threshold = 2*map.metersPerCell();
+//     double threshold = 2*map.metersPerCell();
 
-    Point<double> origin  = ray.origin;
-    double ex = ray.origin.x + (ray.range+2*threshold) * std::cos(ray.theta);
-    double ey = ray.origin.y + (ray.range+2*threshold) * std::sin(ray.theta);
-    Point<double> endPoint(ex, ey);
+//     Point<double> origin  = ray.origin;
+//     double ex = ray.origin.x + (ray.range+2*threshold) * std::cos(ray.theta);
+//     double ey = ray.origin.y + (ray.range+2*threshold) * std::sin(ray.theta);
+//     Point<double> endPoint(ex, ey);
 
-    int x0 = map.pos_to_cell_x(origin.x);
-    int x1 = map.pos_to_cell_x(endPoint.x);
-    int y0 = map.pos_to_cell_y(origin.y);
-    int y1 = map.pos_to_cell_y(endPoint.y);
+//     int x0 = map.pos_to_cell_x(origin.x);
+//     int x1 = map.pos_to_cell_x(endPoint.x);
+//     int y0 = map.pos_to_cell_y(origin.y);
+//     int y1 = map.pos_to_cell_y(endPoint.y);
 
-    // start breshenham
-    double dist_to_wall = get_dist_to_wall(x0, x1, y0, y1, map);
+//     // start breshenham
+//     double dist_to_wall = get_dist_to_wall(x0, x1, y0, y1, map);
 
-    if (ray.range <= dist_to_wall - threshold){
-        return s_too_near;
-    }
-    if (ray.range >= dist_to_wall + threshold){
-        return s_too_far;
-    }
+//     if (ray.range <= dist_to_wall - threshold){
+//         return s_too_near;
+//     }
+//     if (ray.range >= dist_to_wall + threshold){
+//         return s_too_far;
+//     }
 
-    return s_correct;
-}
+//     return s_correct;
+// }
 
 
-double SensorModel::get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
+// double SensorModel::get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
 
-    // breshenham
+//     // breshenham
     
-    int dx = std::abs(x1 - x0);
-    int dy = std::abs(y1 - y0);
+//     int dx = std::abs(x1 - x0);
+//     int dy = std::abs(y1 - y0);
 
-    int sx = x0 < x1 ? 1 : -1;
-    int sy = y0 < y1 ? 1 : -1;
+//     int sx = x0 < x1 ? 1 : -1;
+//     int sy = y0 < y1 ? 1 : -1;
 
-    int err = dx - dy;
+//     int err = dx - dy;
 
-    int x = x0;
-    int y = y0;
+//     int x = x0;
+//     int y = y0;
 
-    while ((x != x1 ) || (y != y1)) {
-        // check if cell is free
+//     while ((x != x1 ) || (y != y1)) {
+//         // check if cell is free
 
-        if (!map.isCellInGrid(x, y)){
-            break;
-        }
+//         if (!map.isCellInGrid(x, y)){
+//             break;
+//         }
 
-        if (map.isOccupied(x, y)){
-            break;
-        }
+//         if (map.isOccupied(x, y)){
+//             break;
+//         }
 
-        int e2 = 2 * err;
-        if (e2 >= - dy){
-            err -= dy;
-            x += sx;
-        }
-        if (e2 <= dx){
-            err += dx;
-            y += sy;
-        }
+//         int e2 = 2 * err;
+//         if (e2 >= - dy){
+//             err -= dy;
+//             x += sx;
+//         }
+//         if (e2 <= dx){
+//             err += dx;
+//             y += sy;
+//         }
     
-    }
+//     }
 
-    float DeltaX = map.metersPerCell() * (x-x0);
-    float DeltaY = map.metersPerCell() * (y-y0);
+//     float DeltaX = map.metersPerCell() * (x-x0);
+//     float DeltaY = map.metersPerCell() * (y-y0);
 
-    return std::sqrt(DeltaX*DeltaX + DeltaY*DeltaY);
+//     return std::sqrt(DeltaX*DeltaX + DeltaY*DeltaY);
     
-}
+// }
 
 

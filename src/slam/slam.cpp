@@ -288,8 +288,8 @@ void OccupancyGridSLAM::updateMap(void)
     {
         auto mapMessage = map_.toLCM();
         lcm_.publish(SLAM_MAP_CHANNEL, &mapMessage);
-        map_.saveToFile("current.map");
-        printf("SAVED!\n");
+        // map_.saveToFile("current.map");
+        // printf("SAVED!\n");
 
     }
 
