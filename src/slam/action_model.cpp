@@ -33,10 +33,10 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
     rot2_ = angle_diff(dth, rot1_);
     if (std::abs(dth) >= M_PI / 2.0){
-        rot1_ = angle_diff(M_PI - dth);
+        rot1_ = angle_diff(M_PI, dth);
         direction = -1.0;
     }
-    trans *= direction;
+    trans_ *= direction;
 
     moved_ = (dx != 0.0) && (dy != 0.0) && (dth != 0.0);
 
