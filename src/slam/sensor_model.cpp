@@ -39,17 +39,17 @@ double scoreRay(adjusted_ray_t& ray, OccupancyGrid& map){
     // check if occupied for each cell along this ray
     // determine if early or late
 
-    double threshold = 2*Mapping::metersPerCell();
+    double threshold = 2*map.metersPerCell();
 
     Point<double> origin  = ray.origin;
     double ex = ray.origin.x + (ray.range+2*threshold) * std::cos(ray.theta);
     double ey = ray.origin.y + (ray.range+2*threshold) * std::sin(ray.theta);
     Point<double> endPoint(ex, ey);
 
-    int x0 = Mapping::pos_to_cell_x(origin.x);
-    int x1 = Mapping::pos_to_cell_x(endPoint.x);
-    int y0 = Mapping::pos_to_cell_y(origin.y);
-    int y1 = Mapping::pos_to_cell_y(endPoint.y);
+    int x0 = map.pos_to_cell_x(origin.x);
+    int x1 = map.pos_to_cell_x(endPoint.x);
+    int y0 = map.pos_to_cell_y(origin.y);
+    int y1 = map.pos_to_cell_y(endPoint.y);
 
     // start breshenham
     double dist_to_wall = get_dist_to_wall(x0, x1, y0, y1, map);
@@ -87,7 +87,7 @@ double get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map){
             break;
         }
 
-        if (map.isOccupied(x, y))
+        if (map.isOccupied(x, y)){
             break;
         }
 

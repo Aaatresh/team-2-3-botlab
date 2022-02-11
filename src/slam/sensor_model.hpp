@@ -40,7 +40,7 @@ private:
     
     ///////// TODO: Add any private members for your SensorModel ///////////////////
 
-    double scoreRay(adjusted_ray& ray, OccupancyGrid& map);
+    double scoreRay(adjusted_ray_t& ray, OccupancyGrid& map);
 
 };
 
