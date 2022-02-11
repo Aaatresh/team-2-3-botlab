@@ -195,6 +195,7 @@ public:
 
     int pos_to_cell_x(float pos_x);
     int pos_to_cell_y(float pox_y);
+    bool isOccupied(int x, int y);
     
 private:
     

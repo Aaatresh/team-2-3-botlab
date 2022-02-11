@@ -59,6 +59,14 @@ bool OccupancyGrid::isCellInGrid(int x, int y) const
     return xCoordIsValid && yCoordIsValid;
 }
 
+bool OccupancyGrid::isOccupied(int x, int y) {
+    CellOdds o = logOdds(x, y);
+
+    if (o > 0){
+        return true;
+    }
+    return false;
+}
 
 CellOdds OccupancyGrid::logOdds(int x, int y) const
 {
