@@ -43,6 +43,7 @@ private:
     ///////// TODO: Add any private members for your SensorModel ///////////////////
 
     double scoreRay(adjusted_ray_t& ray, OccupancyGrid& map);
+    double get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map);
 
 };
 
