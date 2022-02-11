@@ -28,7 +28,7 @@ double SensorModel::likelihood(const particle_t& sample, const lidar_t& scan, co
     return std::exp(scanScore);
 }
 
-double SensorModel::scoreRay(adjusted_ray_t& ray, OccupancyGrid& map){
+double SensorModel::scoreRay(const adjusted_ray_t& ray, OccupancyGrid& map){
  
     double s_too_near = -8;
     double s_correct = -4;
