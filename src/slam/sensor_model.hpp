@@ -1,6 +1,8 @@
 #ifndef SLAM_SENSOR_MODEL_HPP
 #define SLAM_SENSOR_MODEL_HPP
 
+#include <moving_laser_scan.hpp>
+
 class  lidar_t;
 class  OccupancyGrid;
 struct particle_t;

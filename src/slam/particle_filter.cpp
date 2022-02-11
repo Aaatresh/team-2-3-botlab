@@ -100,7 +100,7 @@ std::vector<particle_t> ParticleFilter::resamplePosteriorDistribution(void)
     std::mt19937 generator(rd());
     std::normal_distribution<float> dist(0.0, 0.01);
 
-    for (auto & p ; prior){
+    for (auto& p : prior){
         p.pose.x = posteriorPose_.x + dist(generator);
         p.pose.y = posteriorPose_.y + dist(generator);
         p.pose.theta = wrap_to_pi(posteriorPose_.theta + dist(generator));
@@ -166,7 +166,7 @@ pose_xyt_t ParticleFilter::estimatePosteriorPose(const std::vector<particle_t>& 
     double mean_cos = 0.0;
     double mean_sin = 0.0;
 
-    for (auto &p : posterior){
+    for (auto&p : posterior){
         mean_x += p.pose.x * p.weight;
         mean_y += p.pose.y * p.weight;
         mean_cos += std::cos(p.pose.theta) * p.weight;
