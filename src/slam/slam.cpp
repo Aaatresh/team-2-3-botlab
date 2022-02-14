@@ -56,7 +56,8 @@ OccupancyGridSLAM::OccupancyGridSLAM(int         numParticles,
     // If we are only building the occupancy grid using ground-truth poses, then subscribe to the ground-truth poses.
     if(mode_ == mapping_only)
     {
-        lcm_.subscribe(SLAM_POSE_CHANNEL, &OccupancyGridSLAM::handlePose, this);
+        // lcm_.subscribe(SLAM_POSE_CHANNEL, &OccupancyGridSLAM::handlePose, this);
+        lcm_.subscribe(ODOMETRY_CHANNEL, &OccupancyGridSLAM::handlePose, this);
     }
     
     // Zero-out all the poses to start. Either the robot will start at (0,0,0) or at the first pose received from the
@@ -138,6 +139,7 @@ void OccupancyGridSLAM::handleOdometry(const lcm::ReceiveBuffer* rbuf, const std
     odomPose.y = odometry->y;
     odomPose.theta = odometry->theta;
     odometryPoses_.addPose(odomPose);
+    printf("RECEIVED ODOMETRY POSE!");
 }
 
 
@@ -274,11 +276,12 @@ void OccupancyGridSLAM::updateLocalization(void)
 
 void OccupancyGridSLAM::updateMap(void)
 {
+    prinf("CALLING UPDATE MAP!\n");
     if(mode_ != localization_only && mode_ != action_only)
     {
         // Process the map
         mapper_.updateMap(currentScan_, currentPose_, map_);
-        // printf("Updated!\n");
+        printf("Updated!\n");
         haveMap_ = true;
     }
 
