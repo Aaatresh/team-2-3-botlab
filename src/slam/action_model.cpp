@@ -7,6 +7,9 @@
 
 
 ActionModel::ActionModel(void)
+: k1_(0.01f)
+, k2_(0.01f)
+, initialised_(false)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
     std::random_device rd;
@@ -27,18 +30,19 @@ bool ActionModel::updateAction(const pose_xyt_t& odometry)
     double dx = odometry.x - prevOdom_.x;
     double dy = odometry.y - prevOdom_.y;
     double dth = angle_diff(odometry.theta, prevOdom_.theta);
+    // double dth = odometry.theta - prevOdom_.theta;
     float direction = 1.0;
 
     trans_= sqrt(dx*dx + dy*dy);
     rot1_ = angle_diff(std::atan2(dy, dx), prevOdom_.theta);
-    rot2_ = angle_diff(dth, rot1_);
-    if (std::abs(dth) >= M_PI / 2.0){
-        rot1_ = angle_diff(M_PI, dth);
+    if (std::abs(rot1_) >= M_PI / 2.0){
+        rot1_ = angle_diff(M_PI, rot1_);
         direction = -1.0;
     }
+    rot2_ = angle_diff(dth, rot1_);
     trans_ *= direction;
 
-    moved_ = (dx != 0.0) && (dy != 0.0) && (dth != 0.0);
+    moved_ = (dx != 0.0) || (dy != 0.0) || (dth != 0.0);
 
     if (moved_){	
         rot1Std_ = sqrt(k1_ * std::abs(rot1_));
@@ -58,7 +62,7 @@ particle_t ActionModel::applyAction(const particle_t& sample)
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
 
-
+	/*
    std::normal_distribution<float> d1(0.0, rot1Std_);
    std::normal_distribution<float> d2(0.0, transStd_);
    std::normal_distribution<float> d3(0.0, rot2Std_);
@@ -74,7 +78,23 @@ particle_t ActionModel::applyAction(const particle_t& sample)
    newSample.pose.theta += rot1_ + rot2_ + e1 + e3;
    newSample.pose.utime = utime_;
    newSample.pose.theta = wrap_to_pi(newSample.pose.theta);
+	*/
 
+
+   std::normal_distribution<float> d1(rot1_, rot1Std_);
+   std::normal_distribution<float> d2(trans_, transStd_);
+   std::normal_distribution<float> d3(rot2_, rot2Std_);
+
+    float e1 = d1(numGen_);
+    float e2 = d2(numGen_);
+    float e3 = d3(numGen_);
+
+   particle_t newSample = sample;
+   
+   newSample.pose.x += e2 * std::cos(sample.pose.theta + e1);
+   newSample.pose.y += e2 * std::sin(sample.pose.theta + e1);
+   newSample.pose.theta = wrap_to_pi(sample.pose.theta + e1 + e3);
+   newSample.pose.utime = utime_;
 
    newSample.parent_pose = sample.pose;
 
