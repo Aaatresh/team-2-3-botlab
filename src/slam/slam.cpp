@@ -60,7 +60,7 @@ OccupancyGridSLAM::OccupancyGridSLAM(int         numParticles,
         lcm_.subscribe(ODOMETRY_CHANNEL, &OccupancyGridSLAM::handlePose, this);
     }
     
-    // Zero-out all the poses to start. Either the robot will start at (0,0,0) or at the first pose received from the
+    // Zero-out all the poses to start. EiFther the robot will start at (0,0,0) or at the first pose received from the
     // Optitrack system.
     initialPose_.x = initialPose_.y = initialPose_.theta = 0.0f;
     previousPose_.x = previousPose_.y = previousPose_.theta = 0.0f;
@@ -140,7 +140,7 @@ void OccupancyGridSLAM::handleOdometry(const lcm::ReceiveBuffer* rbuf, const std
     odomPose.y = odometry->y;
     odomPose.theta = odometry->theta;
     odometryPoses_.addPose(odomPose);
-    printf("RECEIVED ODOMETRY POSE!");
+    //printf("RECEIVED ODOMETRY POSE!");
 }
 
 
