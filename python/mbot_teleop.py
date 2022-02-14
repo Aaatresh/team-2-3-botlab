@@ -10,8 +10,8 @@ sys.path.append("lcmtypes")
 import lcm
 from lcmtypes import mbot_motor_command_t
 
-LIN_VEL_CMD = 1.5
-ANG_VEL_CMD = 6.28
+LIN_VEL_CMD = 0.25
+ANG_VEL_CMD = 0.785
 
 lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
 pygame.init()
@@ -42,7 +42,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     if key_input[pygame.K_LEFT]:
         turn_vel += 1.0
     if key_input[pygame.K_UP]:
-        fwd_vel +=1.0
+        fwd_vel += 1.0
     if key_input[pygame.K_RIGHT]:
         turn_vel -= 1.0
     if key_input[pygame.K_DOWN]:

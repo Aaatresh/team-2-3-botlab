@@ -104,6 +104,7 @@ void OccupancyGridSLAM::handleLaser(const lcm::ReceiveBuffer* rbuf, const std::s
     if(haveOdom || havePose)
     {
         incomingScans_.push_back(*scan);
+        //printf("ENQUEING LIDAR SCAN FOR PROCESSING\n");
         
         // If we showed the laser error message, then provide another message indicating that laser scans are now
         // being saved
@@ -178,8 +179,7 @@ bool OccupancyGridSLAM::isReadyToUpdate(void)
         // Only care if there's odometry data if we aren't in mapping-only mode
         bool haveNewOdom = (mode_ != mapping_only) && (odometryPoses_.containsPoseAtTime(nextScan.times.front()));
         // Otherwise, only see if a new pose has arrived
-        bool haveNewPose = (mode_ == mapping_only) && (groundTruthPoses_.containsPoseAtTime(nextScan.times.front()));        
-
+        bool haveNewPose = (mode_ == mapping_only) && (groundTruthPoses_.containsPoseAtTime(nextScan.times.front()));
         haveData = haveNewOdom || haveNewPose;
     }
 
@@ -274,11 +274,12 @@ void OccupancyGridSLAM::updateLocalization(void)
 
 void OccupancyGridSLAM::updateMap(void)
 {
+    //printf("CALLING UPDATE MAP\n");
     if(mode_ != localization_only && mode_ != action_only)
     {
         // Process the map
         mapper_.updateMap(currentScan_, currentPose_, map_);
-        // printf("Updated!\n");
+        //printf("Updated!\n");
         haveMap_ = true;
     }
 
@@ -289,7 +290,7 @@ void OccupancyGridSLAM::updateMap(void)
         auto mapMessage = map_.toLCM();
         lcm_.publish(SLAM_MAP_CHANNEL, &mapMessage);
         map_.saveToFile("current.map");
-        printf("SAVED!\n");
+        printf("SAVED CURRENT MAP!\n");
 
     }
 
