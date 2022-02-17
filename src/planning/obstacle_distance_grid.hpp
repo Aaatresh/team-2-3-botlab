@@ -68,6 +68,11 @@ public:
     */
     float operator()(int x, int y) const { return cells_[cellIndex(x, y)]; }
     float& operator()(int x, int y) { return cells_[cellIndex(x, y)]; }
+
+    // int pos_to_cell_x(float x);
+    // int pos_to_cell_y(float x);
+    // float cell_to_pos_x(int x);
+    // float cell_to_pos_y(int y);
     
 private:
     
