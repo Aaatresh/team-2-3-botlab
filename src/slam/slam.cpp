@@ -20,7 +20,7 @@ OccupancyGridSLAM::OccupancyGridSLAM(int         numParticles,
 , haveMap_(false)
 , numIgnoredScans_(0)
 , filter_(numParticles)
-, map_(10.0f, 10.0f, 0.05f) //30,30,0.1  // create a 10m x 10m grid with 0.05m cells
+, map_(10.0f, 5.0f, 0.025f) //30,30,0.1  // create a 10m x 10m grid with 0.05m cells
 , mapper_(5.0f, hitOddsIncrease, missOddsDecrease)
 , lcm_(lcmComm)
 , mapUpdateCount_(0)
@@ -56,10 +56,11 @@ OccupancyGridSLAM::OccupancyGridSLAM(int         numParticles,
     // If we are only building the occupancy grid using ground-truth poses, then subscribe to the ground-truth poses.
     if(mode_ == mapping_only)
     {
-        lcm_.subscribe(SLAM_POSE_CHANNEL, &OccupancyGridSLAM::handlePose, this);
+        // lcm_.subscribe(SLAM_POSE_CHANNEL, &OccupancyGridSLAM::handlePose, this);
+        lcm_.subscribe(ODOMETRY_CHANNEL, &OccupancyGridSLAM::handlePose, this);
     }
     
-    // Zero-out all the poses to start. Either the robot will start at (0,0,0) or at the first pose received from the
+    // Zero-out all the poses to start. EiFther the robot will start at (0,0,0) or at the first pose received from the
     // Optitrack system.
     initialPose_.x = initialPose_.y = initialPose_.theta = 0.0f;
     previousPose_.x = previousPose_.y = previousPose_.theta = 0.0f;
@@ -104,6 +105,7 @@ void OccupancyGridSLAM::handleLaser(const lcm::ReceiveBuffer* rbuf, const std::s
     if(haveOdom || havePose)
     {
         incomingScans_.push_back(*scan);
+        //printf("ENQUEING LIDAR SCAN FOR PROCESSING\n");
         
         // If we showed the laser error message, then provide another message indicating that laser scans are now
         // being saved
@@ -138,6 +140,7 @@ void OccupancyGridSLAM::handleOdometry(const lcm::ReceiveBuffer* rbuf, const std
     odomPose.y = odometry->y;
     odomPose.theta = odometry->theta;
     odometryPoses_.addPose(odomPose);
+    //printf("RECEIVED ODOMETRY POSE!");
 }
 
 
@@ -178,8 +181,7 @@ bool OccupancyGridSLAM::isReadyToUpdate(void)
         // Only care if there's odometry data if we aren't in mapping-only mode
         bool haveNewOdom = (mode_ != mapping_only) && (odometryPoses_.containsPoseAtTime(nextScan.times.front()));
         // Otherwise, only see if a new pose has arrived
-        bool haveNewPose = (mode_ == mapping_only) && (groundTruthPoses_.containsPoseAtTime(nextScan.times.front()));        
-
+        bool haveNewPose = (mode_ == mapping_only) && (groundTruthPoses_.containsPoseAtTime(nextScan.times.front()));
         haveData = haveNewOdom || haveNewPose;
     }
 
@@ -278,18 +280,17 @@ void OccupancyGridSLAM::updateMap(void)
     {
         // Process the map
         mapper_.updateMap(currentScan_, currentPose_, map_);
-        // printf("Updated!\n");
         haveMap_ = true;
     }
 
     // Publish the map even in localization-only mode to ensure the visualization is meaningful
     // Send every 5th map -- about 1Hz update rate for map output -- can change if want more or less during operation
-    if(mapUpdateCount_ % 5 == 0)
+    if(mapUpdateCount_ % 10 == 0)
     {
         auto mapMessage = map_.toLCM();
         lcm_.publish(SLAM_MAP_CHANNEL, &mapMessage);
         map_.saveToFile("current.map");
-        printf("SAVED!\n");
+        printf("SAVED CURRENT MAP!\n");
 
     }
 

@@ -1,6 +1,8 @@
 #ifndef SLAM_SENSOR_MODEL_HPP
 #define SLAM_SENSOR_MODEL_HPP
 
+#include <slam/moving_laser_scan.hpp>
+
 class  lidar_t;
 class  OccupancyGrid;
 struct particle_t;
@@ -39,6 +41,10 @@ public:
 private:
     
     ///////// TODO: Add any private members for your SensorModel ///////////////////
+
+    double scoreRay(adjusted_ray_t ray, OccupancyGrid map);
+    double get_dist_to_wall(int x0, int x1, int y0, int y1, OccupancyGrid& map);
+
 };
 
 #endif // SLAM_SENSOR_MODEL_HPP
