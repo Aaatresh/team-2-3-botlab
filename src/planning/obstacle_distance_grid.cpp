@@ -17,24 +17,49 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
     
     ///////////// TODO: Implement an algorithm to mark the distance to the nearest obstacle for every cell in the map.
 
+
     for(unsigned long i=0; i <= height_; i++){	
 
-	for(unsigned long j=0; j <= width; j++){
+	for(unsigned long j=0; j <= width_; j++){
 		
-		if(map.logOdds(j, i) > 0)
+		if(isCellInGrid(j, i))
 		{
-			distance(j, i) = 0;		
-		}
-		else
-		{
-			int add_factor = 1;
-			while(True)
-			{
-				
-			}	
 
+			if(map.logOdds(j, i) >= 0)
+			{
+				distance(j, i) = 0;		
+			}
+			else
+			{
+				unsigned long add_factor = 1;
+				while(1)
+				{
+					if((isCellInGrid(j + add_factor, i) && map.logOdds(j + add_factor, i) > 0) ||
+					   (isCellInGrid(j, i + add_factor) && map.logOdds(j, i + add_factor) > 0) ||			
+					   (isCellInGrid(j - add_factor, i) && map.logOdds(j - add_factor, i) > 0) ||			
+					   (isCellInGrid(j, i - add_factor) && map.logOdds(j, i - add_factor) > 0))
+					{
+						distance(j, i) = add_factor;
+						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
+						break;
+					}			
+					else
+						add_factor++;
+
+					if(add_factor > std::max(height_, width_))
+					{
+						distance(j, i) = std::max(height_, width_);
+						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
+						break;
+					}
+	
+				}	
+
+			}
+
+			// distance(i, j) = 0.4;
+		
 		}
-				
 
 	}
 
