@@ -39,7 +39,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 					   (isCellInGrid(j - add_factor, i) && map.logOdds(j - add_factor, i) > 0) ||			
 					   (isCellInGrid(j, i - add_factor) && map.logOdds(j, i - add_factor) > 0))
 					{
-						distance(j, i) = add_factor;
+						distance(j, i) = add_factor * 0.1;
 						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
 						break;
 					}			
@@ -48,7 +48,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 
 					if(add_factor > std::max(height_, width_))
 					{
-						distance(j, i) = std::max(height_, width_);
+						distance(j, i) = std::max(height_, width_) * 0.1;
 						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
 						break;
 					}
