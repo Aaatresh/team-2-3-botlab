@@ -36,6 +36,8 @@ public:
     
     float metersPerCell(void) const { return metersPerCell_; }
     float cellsPerMeter(void) const { return cellsPerMeter_; }
+
+    int gridSize(void) const { return width_ * height_; }
     
     Point<float> originInGlobalFrame(void) const { return globalOrigin_; }
     
@@ -69,6 +71,11 @@ public:
     float operator()(int x, int y) const { return cells_[cellIndex(x, y)]; }
     float& operator()(int x, int y) { return cells_[cellIndex(x, y)]; }
 
+    // int gridSize();
+    // void reset_closed_list();
+
+    // bool isClosed(int x, int y);
+
     // int pos_to_cell_x(float x);
     // int pos_to_cell_y(float x);
     // float cell_to_pos_x(int x);
@@ -77,6 +84,7 @@ public:
 private:
     
     std::vector<float> cells_;          ///< The actual grid -- stored in row-major order
+    std::vector<bool> cells_closed_;
     
     int width_;                 ///< Width of the grid in cells
     int height_;                ///< Height of the grid in cells

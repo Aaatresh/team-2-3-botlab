@@ -9,77 +9,184 @@ robot_path_t search_for_path(pose_xyt_t start,
 {
     ////////////////// TODO: Implement your A* search here //////////////////////////
 
-    // convert to cell x, y
-    int x0 = pos_to_cell_x(start.x, distances);
-    int x1 = pos_to_cell_x(goal.x, distances);
-    int y0 = pos_to_cell_y(start.y, distances);
-    int y1 = pos_to_cell_y(goal.y, distances);
+    std::printf("TESTING!");
+
+    // // convert to cell x, y
+    // int x0 = pos_to_cell_x(start.x, distances);
+    // int x1 = pos_to_cell_x(goal.x, distances);
+    // int y0 = pos_to_cell_y(start.y, distances);
+    // int y1 = pos_to_cell_y(goal.y, distances);
 
 
-    // perform Astar in the grid
-    std::vector<Node> cellPath = search_for_path_grid(x0,y0,x1,y1, distances,params);
+    // // perform Astar in the grid
+    // Pair startCell(x0, y0);
+    // Pair goalCell(x1, y1);
+    // std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
 
-    // convert back to robot path
+    // // convert back to robot path
     robot_path_t path;
-    path.utime = start.utime;
-    path.path.push_back(start);    
+    // path.utime = start.utime;
+    // path.path.push_back(start);    
     
-    for (size_t i=0; i<= cellPath.size(); i++){
-        pose_xyt_t pose;
-        pose.x = cell_to_pos_x(cellPath[i].x, distances);
-        pose.y = cell_to_pos_y(cellPath[i].y, distances);
-        path.path.push_back(pose);
-    }
+    // for (size_t i=0; i<= cellPath.size(); i++){
+    //     pose_xyt_t pose;
+    //     pose.x = cell_to_pos_x(cellPath[i].first, distances);
+    //     pose.y = cell_to_pos_y(cellPath[i].second, distances);
+    //     path.path.push_back(pose);
+    // }
 
     
-    path.path_length = path.path.size();
+    // path.path_length = path.path.size();
     
     return path;
 }
 
-std::vector<Node> search_for_path_grid(int x0, int y0, int x1, int y1, 
+int get_index(int x, int y, int width){
+    return y*width + x; 
+}
+
+std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
                             const ObstacleDistanceGrid& distances,
-                            const SearchParams& params){
+                            const SearchParams& params)
+{
+    std::vector<Pair> path;
 
-    std::vector<Node> path;
-    Node start_node;
-    start_node.x = x0;
-    start_node.y = y0;
-    start_node.parent_x = x0; // make myself the parent
-    start_node.parent_y = y0; // make myself the parent
-    start_node.cost_g = 0.0; // cost so far
-    start_node.cost_h = get_cost_h(start_node, x1, y1);
-    start_node.cost_f = start_node.cost_g + start_node.cost_h;
-    path.push_back(start_node);
+    // TODO: check validity of start and goal
 
-    if ((x0 == x1) && (y0 == y1)){
-        // already at goal!
-        return path;
+    int gridSize = distances.gridSize();
+    int const mapWidth = distances.widthInCells();
+    // reset all cells to closed
+    std::vector<bool> closed_list;
+    closed_list.resize(gridSize);
+    for (size_t i = 0; i<= closed_list.size(); i++){
+        closed_list[i] = false;
     }
 
+    // create cell-details array
+    std::vector<Cell> cellDetails;
+    cellDetails.resize(gridSize);
 
-    // initialise the queue
-    std::priority_queue<Node> open_queue;
-    // std::vector<Cell> closed_queue;
-    bool closed_list[distances.widthInCells()][distances.heightInCells()];
+    // Initialise the parameters of the starting node
+    int i = start.first;
+    int j = start.second;
+    int ind = get_index(i, j, mapWidth);
+    cellDetails[ind].f = 0.0;
+    cellDetails[ind].g = 0.0;
+    cellDetails[ind].h = 0.0;
+    cellDetails[ind].parent = {i, j};
 
-    // actually run astar
-    open_queue.push(start_node);
+    // create a priority list
+    // each element of the queue is a tuple (f, x, y)
+    std::priority_queue<Tuple, std::vector<Tuple>, std::greater<Tuple> > openList;
 
-    while (open_queue.size() > 0){
-        // int ind = get_next_node_ind(open_queue);
-        Node node = open_queue.pop();
-        for (auto k : get_children(open_queue)){
+    // place first element on the queue    
+    openList.emplace(0.0, start.first, start.second); // create the first node, and place it in the queue
 
-        }
+    while (! openList.empty())
+    {
+        const Tuple& p = openList.top(); // get the next element from the queue
+        i = std::get<1>(p);
+        j = std::get<2>(p);
+        ind = get_index(i, j, mapWidth);
+
+        openList.pop();
+        closed_list[ind] = true;
+
+        // generate all neighbors
+        for (Pair neighbour : neighbors(i, j, distances))
+        {
+                    // If the destination cell is the same
+                    // as the current successor
+                    int n_ind = get_index(neighbour.first, neighbour.second, mapWidth);
+
+                    if (isDestination(neighbour, goal)) { // Set the Parent of the destination cell
+                        cellDetails[n_ind].parent = { i, j };
+                        printf("The destination cell is found\n");
+                        return tracePath(cellDetails, neighbour, mapWidth);
+                    }
+                    // If the successor is already on the closed list or if it is blocked, then ignore it.  Else do the following
+                    if (!closed_list[n_ind] && (distances(neighbour.first, neighbour.second) > 0)) {
+                        double gNew, hNew, fNew;
+                        gNew = cellDetails[ind].g + 1.0;
+                        hNew = get_cost_h(neighbour, goal);
+                        fNew = gNew + hNew;
+ 
+                        // If it isn’t on the open list, add
+                        // it to the open list. Make the
+                        // current square the parent of this
+                        // square. Record the f, g, and h
+                        // costs of the square cell
+                        //             OR
+                        // If it is on the open list
+                        // already, check to see if this
+                        // path to that square is better,
+                        // using 'f' cost as the measure.
+                        if (cellDetails[n_ind].f== -1 || cellDetails[n_ind].f > fNew) {
+                            
+                            openList.emplace(fNew, neighbour.first, neighbour.second);
+ 
+                            // Update the details of this cell
+                            cellDetails[n_ind].g = gNew;
+                            cellDetails[n_ind].h = hNew;
+                            cellDetails[n_ind].f = fNew;
+                            cellDetails[n_ind].parent= { i, j };
+                        }
+                    }
+                }
+            
 
     }
 
-
-
+    std::printf("NO VALID PATH FOUND!!");
 
     return path;
 
+}
+
+bool isDestination(Pair n, Pair goal){
+    return (n.first == goal.first) && (n.second == goal.second);
+}
+
+std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width){
+    std::vector<Pair> path;
+
+    Pair c = goal;
+    path.push_back(c);
+
+    bool done = false;
+
+    while (!done){
+        
+        int c_ind = get_index(c.first, c.second, width);
+        Pair p = cellDetails[c_ind].parent;
+
+        if ((p.first == c.first) && (p.second == c.second)){
+            // done
+            done = true;
+            return path;
+        }
+        path.push_back(p);
+        c = p;
+    }
+    return path;
+
+
+}
+
+std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances){
+    // return valid neighbors
+    std::vector<Pair> pairs;
+    for (int i=-1; i<= 1; i++){
+        for (int j=-1; j<= 1; j++){
+            if ((i!=0) && (j!=0)){
+                if (distances.isCellInGrid(x+i, y+j)){
+                    Pair p(x+i, y+j);
+                    pairs.push_back(p);
+                }
+            }
+        }
+    }
+    return pairs;
 }
 
 // int get_next_node_ind(std::vector<Node> open_queue){
@@ -97,8 +204,8 @@ std::vector<Node> search_for_path_grid(int x0, int y0, int x1, int y1,
 
 
 // return the estimated cost to go
-float get_cost_h(Node n, int goal_x, int goal_y){
-    return std::abs(goal_x - n.x) + std::abs(goal_y - n.y);
+float get_cost_h(Pair n, Pair goal){
+    return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
 }
 
 

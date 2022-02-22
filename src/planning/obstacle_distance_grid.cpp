@@ -43,17 +43,17 @@ void ObstacleDistanceGrid::resetGrid(const OccupancyGrid& map)
     height_ = map.heightInCells();
     
     cells_.resize(width_ * height_);
+    // cells_closed_.resize(width_ * height_);
 }
 
-// int ObstacleDistanceGrid::pos_to_cell_x(float pos_x){
-//     return int((pos_x - globalOrigin_.x ) * cellsPerMeter_);
+// void ObstacleDistanceGrid::reset_closed_list(){
+//     // reset all cells to be closed at the start
+//     for (size_t i=0; i< cells_closed_.size(); i++){
+//         cells_closed_[i] = false;
+//     }
 // }
-// int ObstacleDistanceGrid::pos_to_cell_y(float pos_y){
-//     return int((pos_y - globalOrigin_.y ) * cellsPerMeter_);
-// }
-// float ObstacleDistanceGrid::cell_to_pos_x(int x){
-//     return globalOrigin_.x + x * cellsPerMeter_;
-// }
-// float ObstacleDistanceGrid::cell_to_pos_y(int y){
-//     return globalOrigin_.y + y * cellsPerMeter_;
+
+
+// int ObstacleDistanceGrid::gridSize(){
+//     return width_ * height_;
 // }

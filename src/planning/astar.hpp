@@ -4,6 +4,7 @@
 #include <lcmtypes/robot_path_t.hpp>
 #include <lcmtypes/pose_xyt_t.hpp>
 #include<queue>
+#include <tuple>
 
 // struct CellPath{
 //     st
@@ -11,25 +12,33 @@
 //     // std::vector<int> ys;
 // };
 
-struct Node{
-    int x;
-    int y;
-    int parent_x;
-    int parent_y;
-    float cost_f;
-    float cost_g;
-    float cost_h;
+// create custom types
+typedef std::pair<int, int> Pair;
+// struct Pair{
+//     int x;
+//     int y;
+//     Pair(int xx, int yy)
+//         : x(xx)
+//         , y(yy)
+//     {}
+// };
+typedef std::tuple<double, int, int> Tuple;
+
+struct Cell {
+    Pair parent;
+    float f, g, h;
+    // default constructor is outside cells space
+    Cell()
+        : parent(-1, -1)
+        , f(-1)
+        , g(-1)
+        , h(-1)
+    {}
 };
 
-struct Cell{
-    int x; 
-    int y;
-};
-
-
-inline bool operator < (const Node& lhs, const Node& rhs)
+inline bool operator < (const Cell& lhs, const Cell& rhs)
 {//We need to overload "<" to put our struct into a set
-    return lhs.cost_f < rhs.cost_f;
+    return lhs.f < rhs.f;
 }
 
 class ObstacleDistanceGrid;
@@ -68,7 +77,7 @@ robot_path_t search_for_path(pose_xyt_t start,
                              const SearchParams& params);
 
 
-std::vector<Node> search_for_path_grid(int x0, int y0, int x1, int y1, 
+std::vector<Pair> search_for_path_grid(Pair start, Pair Goal,
                             const ObstacleDistanceGrid& distances,
                             const SearchParams& params);
 
@@ -83,8 +92,24 @@ float cell_to_pos_x(int x, const ObstacleDistanceGrid& distances);
 
 float cell_to_pos_y(int y, const ObstacleDistanceGrid& distances);
 
-float get_cost_h(Node n, int goal_x, int goal_y);
+float get_cost_h(Pair n, Pair goal);
 
-Node get_next_node(std::vector<Node> open_queue);
+// Node get_next_node(std::vector<Node> open_queue);
+
+
+
+
+int get_index(int x, int y, int width);
+
+
+bool isDestination(Pair n, Pair goal);
+
+std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances);
+
+std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width);
+
+
+
+
 
 #endif // PLANNING_ASTAR_HPP
