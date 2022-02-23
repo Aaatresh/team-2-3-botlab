@@ -312,8 +312,8 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
 
 // return the estimated cost to go
 float get_cost_h(Pair n, Pair goal){
-    return std::sqrt(std::pow(goal.first - n.first, 2) + std::pow(goal.second - n.second, 2));
-    // return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
+    // return std::sqrt(std::pow(goal.first - n.first, 2) + std::pow(goal.second - n.second, 2));
+    return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
 }
 
 
