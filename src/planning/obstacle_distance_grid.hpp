@@ -70,6 +70,8 @@ public:
     */
     float operator()(int x, int y) const { return cells_[cellIndex(x, y)]; }
     float& operator()(int x, int y) { return cells_[cellIndex(x, y)]; }
+    
+    std::vector<Point<unsigned int>> get_adj8(Point<unsigned int> boundary, unsigned int distance_counter);
 
     // int gridSize();
     // void reset_closed_list();

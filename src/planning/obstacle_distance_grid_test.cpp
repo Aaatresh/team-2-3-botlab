@@ -92,7 +92,9 @@ bool test_obstacle_distances(void)
     OccupancyGrid grid = generate_grid();
     ObstacleDistanceGrid distances;
     distances.setDistances(grid);
-    
+   
+    // printf("************ chkpt1 ******************");
+ 
     int numObstacleCells = 0;
     int numCorrectObstacleDistances = 0;
     
