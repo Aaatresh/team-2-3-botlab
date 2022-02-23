@@ -194,6 +194,3 @@ int OccupancyGrid::pos_to_cell_y(float pos_y){
     return int((pos_y - globalOrigin_.y ) * cellsPerMeter_);
 }
 
-// float cell_to_pos_x(int cell_x);
-// float cell_to_pos_y(int cell_y);
-

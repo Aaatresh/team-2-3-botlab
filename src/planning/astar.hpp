@@ -86,25 +86,9 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair Goal,
                             const SearchParams& params);
 
 
-
-
-int pos_to_cell_x(float pos_x, const ObstacleDistanceGrid& distances);
-
-int pos_to_cell_y(float pos_y, const ObstacleDistanceGrid& distances);
-
-float cell_to_pos_x(int x, const ObstacleDistanceGrid& distances);
-
-float cell_to_pos_y(int y, const ObstacleDistanceGrid& distances);
-
 float get_cost_h(Pair n, Pair goal);
 
-// Node get_next_node(std::vector<Node> open_queue);
-
-
-
-
 int get_index(int x, int y, int width);
-
 
 bool isDestination(Pair n, Pair goal);
 
