@@ -246,7 +246,6 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
     int numCorrect = 0;
     
     for(int n = 0; n < numGoals; ++n)
-    // for (int n = 2; n < 3; n++)
     {
         poseIn >> start.x >> start.y >> goal.x >> goal.y >> shouldExist;
         

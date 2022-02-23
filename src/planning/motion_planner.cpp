@@ -71,6 +71,8 @@ bool MotionPlanner::isValidGoal(const pose_xyt_t& goal) const
 
         // std::printf("Distances: %f, Radius: %f", d, r);
 
+        // std::printf("goal dist: %f", distances_(goalCell.x, goalCell.y));
+
         return distances_(goalCell.x, goalCell.y) > params_.robotRadius;
     }
     
