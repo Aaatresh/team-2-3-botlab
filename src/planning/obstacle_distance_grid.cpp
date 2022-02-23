@@ -11,6 +11,41 @@ ObstacleDistanceGrid::ObstacleDistanceGrid(void)
 }
 
 
+std::vector<Point<unsigned long>> ObstacleDistanceGrid::get_adj8(Point<unsigned long> boundary, unsigned long distance_counter){
+    
+    std::vector<Point<unsigned long>> adj8;
+
+    j = boundary.x;
+    i = boundary.y;
+
+    if(distance_(j, i+1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+    if(distance_(j+1, i+1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+    
+    if(distance_(j+1, i) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+    if(distance_(j+1, i-1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+    
+    if(distance_(j, i-1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+    if(distance_(j-1, i-1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+    if(distance_(j-1, i) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+    if(distance_(j-1, i+1) == -1)
+        adj8.push_back(Point<unsigned long>(j, i));
+
+
+    return adj8;
+}
+
 void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 {
     resetGrid(map);
@@ -18,6 +53,64 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
     ///////////// TODO: Implement an algorithm to mark the distance to the nearest obstacle for every cell in the map.
 
 
+    // declare boundary and new_boundary
+    std::vector<Point<unsigned long>> boundary, new_boundary, adj8;
+    long distance_counter = 1;
+
+    for(unsigned long i=0; i<= height_; i++){
+	    
+	    for(unsigned long j=0; j <= width_; j++){
+
+		    if(map.logOdds(j, i) = 0){
+			    distance_(j, i) = 0;
+		    }
+		    else if(map.logOdds(j, i) > 0){
+			    distance_(j, i) = 0;
+			    
+			    boundary.push_back(Point(j, i));
+		    }
+		    else{
+			    distance_(j, i) = -1;
+		    }
+	    }
+    }
+
+    while(1){
+	    flag = 0;
+
+	    while(boundary.empty() == false){
+		    boundary_point = boundary.pop_back();
+
+		    adj8 = get_adj8(boundary_point, distance_counter);
+
+		    if(adj8.empty() == false){
+		        flag = 1;
+
+			for(auto& n : adj8){
+			    j = n.x;
+			    i = n.y;
+			    
+			    new_boundary.push_back(n);
+			    distance_(j, i) = distance_counter;
+			}
+		    }
+	    }
+
+	    if(flag == 0){
+		    break;
+	    }
+
+	    boundary = new_boundary;
+	    new_boundary.clear();
+	    distance_counter++;
+
+	    if(distance_counter > std::max(height_, width_)){
+		    distance_counter = std::max(height_, width_);
+	    }
+
+    }
+
+    /*
     for(unsigned long i=0; i <= height_; i++){	
 
 	for(unsigned long j=0; j <= width_; j++){
@@ -63,7 +156,9 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 
 	}
 
-    }
+    }*/
+
+
 }
 
 
