@@ -2,6 +2,8 @@
 #include <planning/obstacle_distance_grid.hpp>
 
 
+
+
 robot_path_t search_for_path(pose_xyt_t start, 
                              pose_xyt_t goal, 
                              const ObstacleDistanceGrid& distances,
@@ -10,7 +12,7 @@ robot_path_t search_for_path(pose_xyt_t start,
     ////////////////// TODO: Implement your A* search here //////////////////////////
 
     // std::printf("RUNNING ASTAR!\n");
-    std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
+    // std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
 
     // convert to cell x, y
     int x0 = pos_to_cell_x(start.x, distances);
@@ -116,10 +118,17 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
                     }
                     // If the successor is already on the closed list or if it is blocked, then ignore it.  Else do the following
                     
-                    if (!closed_list[n_ind] && (distances(neighbour.first, neighbour.second) > params.minDistanceToObstacle)) {
-                        std::printf("Cell: %d, %d, D: %f\n", neighbour.first, neighbour.second, distances(neighbour.first, neighbour.second));
+                    if (!closed_list[n_ind] && (distances(neighbour.first, neighbour.second) > 1.414*params.minDistanceToObstacle)) {
+                        // std::printf("Cell: %d, %d, D: %f\n", neighbour.first, neighbour.second, distances(neighbour.first, neighbour.second));
                         double gNew, hNew, fNew;
-                        gNew = cellDetails[ind].g + 1.0;
+                        // #ifdef DIAGONAL
+                            float dx = neighbour.first - i;
+                            float dy = neighbour.second - j;
+                            gNew = cellDetails[ind].g + std::sqrt(dx*dx + dy*dy);
+                        // #endif
+                        // #ifndef DIAGONAL
+                            // gNew = cellDetails[ind].g + 1.0;
+                        // #endif
                         hNew = get_cost_h(neighbour, goal);
                         fNew = gNew + hNew;
  
@@ -205,10 +214,33 @@ std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width)
 //     return pairs;
 // }
 
+
+
 // non-diagonal version
 std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances){
     // return valid neighbors
     std::vector<Pair> pairs;
+    // std::vector<Pair> dirs;
+    // const bool diagonal = true;
+
+    // dirs.push_back(Pair(x+1, y));
+    // dirs.push_back(Pair(x-1, y));
+    // dirs.push_back(Pair(x, y+1));
+    // dirs.push_back(Pair(x, y-1));
+    
+    // #ifdef DIAGONAL
+    //     dirs.push_back(Pair(x+1, y+1));
+    //     dirs.push_back(Pair(x-1, y+1));
+    //     dirs.push_back(Pair(x+1, y-1));
+    //     dirs.push_back(Pair(x-1, y-1));
+    // #endif
+
+    // for (auto d : dirs){
+    //     if (distances.isCellInGrid(d.first, d.second)){
+    //         Pair p(d.first, d.second);
+    //         pairs.push_back(p);
+    //     }
+    // }
 
     // +x 
     if (distances.isCellInGrid(x + 1, y)){
@@ -233,6 +265,32 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
         Pair p(x, y-1);
         pairs.push_back(p);
     }
+
+    // +x+y
+    if (distances.isCellInGrid(x+1, y+1)){
+        Pair p(x+1, y+1);
+        pairs.push_back(p);
+    }
+
+    // +x-y
+    if (distances.isCellInGrid(x+1, y-1)){
+        Pair p(x+1, y-1);
+        pairs.push_back(p);
+    }
+
+    // -x+y
+    if (distances.isCellInGrid(x-1, y+1)){
+        Pair p(x-1, y+1);
+        pairs.push_back(p);
+    }
+
+    // -x+y
+    if (distances.isCellInGrid(x-1, y-1)){
+        Pair p(x-1, y-1);
+        pairs.push_back(p);
+    }
+
+    
 
     return pairs;
 }

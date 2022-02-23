@@ -251,16 +251,23 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
         poseIn >> start.x >> start.y >> goal.x >> goal.y >> shouldExist;
         
         robot_path_t path = timed_find_path(start, goal, planner, testName);
+
+        std::printf("PATH RETURNED: L: %d, start: (%f, %f), end: (%f, %f)\n", path.path_length, path.path[0].x,path.path[0].y,path.path[path.path_length-1].x, path.path[path.path_length-1].y );
         if(!animatePath && useGui) lcmConnection.publish(PATH_CHANNEL, &path); // Immediately print out path if no animation flag is sent in
         // See if the generated path was valid
         bool foundPath = path.path_length > 1;
+        if (foundPath) std::printf("found path is true here\n");
         // The goal must be the same position as the end of the path if there was success
         if(!path.path.empty())
         {
             auto goalCell = global_position_to_grid_cell(Point<float>(goal.x, goal.y), grid);
             auto endCell = global_position_to_grid_cell(Point<float>(path.path.back().x, path.path.back().y), grid);
+            
+            std::printf("Goal Cell: %f, %f \n", goalCell.x, goalCell.y);
+            std::printf("End Cell: %f, %f \n", endCell.x, endCell.y);
             foundPath &= goalCell == endCell;
         }
+        if (foundPath) std::printf("found path is also true here\n");
         
         if(foundPath)
         {

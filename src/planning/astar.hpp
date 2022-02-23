@@ -1,6 +1,8 @@
 #ifndef PLANNING_ASTAR_HPP
 #define PLANNING_ASTAR_HPP
 
+// #define DIAGONAL // comment this line to disable moving in diagonals
+
 #include <lcmtypes/robot_path_t.hpp>
 #include <lcmtypes/pose_xyt_t.hpp>
 #include<queue>
