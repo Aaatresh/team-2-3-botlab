@@ -16,32 +16,32 @@ std::vector<Point<unsigned int>> ObstacleDistanceGrid::get_adj8(Point<unsigned i
     
     std::vector<Point<unsigned int>> adj8;
 
-    unsigned long j = boundary.x;
-    unsigned long i = boundary.y;
+    unsigned int j = boundary.x;
+    unsigned int i = boundary.y;
 
     if(isCellInGrid(j, i+1) && distance(j, i+1) == -1)
-        adj8.push_back(Point<unsigned long>(j, i+1));
+        adj8.push_back(Point<unsigned int>(j, i+1));
 
     if(isCellInGrid(j+1, i+1) && distance(j+1, i+1) == -1)
-        adj8.push_back(Point<unsigned long>(j+1, i+1));
+        adj8.push_back(Point<unsigned int>(j+1, i+1));
     
     if(isCellInGrid(j+1, i) && distance(j+1, i) == -1)
-        adj8.push_back(Point<unsigned long>(j+1, i));
+        adj8.push_back(Point<unsigned int>(j+1, i));
 
     if(isCellInGrid(j+1, i-1) && distance(j+1, i-1) == -1)
-        adj8.push_back(Point<unsigned long>(j+1, i-1));
+        adj8.push_back(Point<unsigned int>(j+1, i-1));
     
     if(isCellInGrid(j, i-1) && distance(j, i-1) == -1)
-        adj8.push_back(Point<unsigned long>(j, i-1));
+        adj8.push_back(Point<unsigned int>(j, i-1));
 
     if(isCellInGrid(j-1, i-1) && distance(j-1, i-1) == -1)
-        adj8.push_back(Point<unsigned long>(j-1, i-1));
+        adj8.push_back(Point<unsigned int>(j-1, i-1));
 
     if(isCellInGrid(j-1, i) && distance(j-1, i) == -1)
-        adj8.push_back(Point<unsigned long>(j-1, i));
+        adj8.push_back(Point<unsigned int>(j-1, i));
 
     if(isCellInGrid(j-1, i+1) && distance(j-1, i+1) == -1)
-        adj8.push_back(Point<unsigned long>(j-1, i+1));
+        adj8.push_back(Point<unsigned int>(j-1, i+1));
 
 
     return adj8;
@@ -58,7 +58,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
     // declare boundary and new_boundary
     std::vector<Point<unsigned int>> boundary, new_boundary, adj8;
     
-    long distance_counter = 1;
+    unsigned int distance_counter = 1;
 
     for(unsigned int i=0; i<= height_; i++){
 	    
@@ -117,7 +117,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 			    unsigned int i = n.y;
 			    
 			    new_boundary.push_back(n);
-			    distance(j, i) = distance_counter * 0.1;
+			    distance(j, i) = distance_counter * metersPerCell_;
 			}
 		    }
 
