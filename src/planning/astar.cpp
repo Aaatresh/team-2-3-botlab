@@ -11,42 +11,48 @@ robot_path_t search_for_path(pose_xyt_t start,
 {
     ////////////////// TODO: Implement your A* search here //////////////////////////
 
-    // std::printf("RUNNING ASTAR!\n");
+    std::printf("RUNNING ASTAR!\n");
     // std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
 
-    // convert to cell x, y
-    int x0 = pos_to_cell_x(start.x, distances);
-    int x1 = pos_to_cell_x(goal.x, distances);
-    int y0 = pos_to_cell_y(start.y, distances);
-    int y1 = pos_to_cell_y(goal.y, distances);
+    // // convert to cell x, y
+    // // int x0 = pos_to_cell_x(start.x, distances);
+    // // int x1 = pos_to_cell_x(goal.x, distances);
+    // // int y0 = pos_to_cell_y(start.y, distances);
+    // // int y1 = pos_to_cell_y(goal.y, distances);
+
+    // auto startPoint = global_position_to_grid_cell(Point<float>(start.x, start.y), distances);
+    // auto goalPoint = global_position_to_grid_cell(Point<float>(goal.x, goal.y), distances);
 
 
-    // perform Astar in the grid
-    Pair startCell(x0, y0);
-    Pair goalCell(x1, y1);
-    std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
+    // // perform Astar in the grid
+    // Pair startCell(startPoint.x, startPoint.y);
+    // Pair goalCell(goalPoint.x, goalPoint.y);
+    // std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
 
-    // convert back to robot path
+    // // convert back to robot path
     robot_path_t path;
     path.utime = start.utime;
     path.path.push_back(start); 
-    // std::printf("Adding Pose: %f, %f\n", start.x, start.y);   
+    // // std::printf("Adding Pose: %f, %f\n", start.x, start.y);   
     
-    if (cellPath.size() != 0){
-        for (size_t i = 0; i< cellPath.size(); i++){
-            pose_xyt_t pose;
-            pose.x = cell_to_pos_x(cellPath[cellPath.size() - i - 1].first, distances);
-            pose.y = cell_to_pos_y(cellPath[cellPath.size() - i - 1].second, distances);
-            path.path.push_back(pose);
-            // std::printf("Adding Pose: %f, %f\n", pose.x, pose.y);
-        }
-    }
+    // if (cellPath.size() != 0){
+    //     for (size_t i = 0; i< cellPath.size(); i++){
+    //         pose_xyt_t pose;
+    //         float x = 1.0*cellPath[cellPath.size() - i - 1].first;
+    //         float y = 1.0*cellPath[cellPath.size() - i - 1].second;
+    //         auto point = grid_position_to_global_position(Point<double>(x, y), distances);
+    //         pose.x = point.x;
+    //         pose.y = point.y;
+    //         path.path.push_back(pose);
+    //         // std::printf("Adding Pose: %f, %f\n", pose.x, pose.y);
+    //     }
+    // }
 
     path.path_length = path.path.size();
 
-    // printf("length: %d\n", path.path_length);
-    // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
-    // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
+    // // printf("length: %d\n", path.path_length);
+    // // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
+    // // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
     
     
     
@@ -312,6 +318,7 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
 
 // return the estimated cost to go
 float get_cost_h(Pair n, Pair goal){
+    // return std::sqrt(std::pow(goal.first - n.first, 2) + std::pow(goal.second - n.second, 2));
     return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
 }
 
