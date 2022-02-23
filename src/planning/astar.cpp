@@ -9,34 +9,44 @@ robot_path_t search_for_path(pose_xyt_t start,
 {
     ////////////////// TODO: Implement your A* search here //////////////////////////
 
-    std::printf("TESTING!");
+    // std::printf("RUNNING ASTAR!\n");
+    std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
 
-    // // convert to cell x, y
-    // int x0 = pos_to_cell_x(start.x, distances);
-    // int x1 = pos_to_cell_x(goal.x, distances);
-    // int y0 = pos_to_cell_y(start.y, distances);
-    // int y1 = pos_to_cell_y(goal.y, distances);
+    // convert to cell x, y
+    int x0 = pos_to_cell_x(start.x, distances);
+    int x1 = pos_to_cell_x(goal.x, distances);
+    int y0 = pos_to_cell_y(start.y, distances);
+    int y1 = pos_to_cell_y(goal.y, distances);
 
 
-    // // perform Astar in the grid
-    // Pair startCell(x0, y0);
-    // Pair goalCell(x1, y1);
-    // std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
+    // perform Astar in the grid
+    Pair startCell(x0, y0);
+    Pair goalCell(x1, y1);
+    std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
 
-    // // convert back to robot path
+    // convert back to robot path
     robot_path_t path;
-    // path.utime = start.utime;
-    // path.path.push_back(start);    
+    path.utime = start.utime;
+    path.path.push_back(start); 
+    // std::printf("Adding Pose: %f, %f\n", start.x, start.y);   
     
-    // for (size_t i=0; i<= cellPath.size(); i++){
-    //     pose_xyt_t pose;
-    //     pose.x = cell_to_pos_x(cellPath[i].first, distances);
-    //     pose.y = cell_to_pos_y(cellPath[i].second, distances);
-    //     path.path.push_back(pose);
-    // }
+    if (cellPath.size() != 0){
+        for (size_t i = 0; i< cellPath.size(); i++){
+            pose_xyt_t pose;
+            pose.x = cell_to_pos_x(cellPath[cellPath.size() - i - 1].first, distances);
+            pose.y = cell_to_pos_y(cellPath[cellPath.size() - i - 1].second, distances);
+            path.path.push_back(pose);
+            // std::printf("Adding Pose: %f, %f\n", pose.x, pose.y);
+        }
+    }
 
+    path.path_length = path.path.size();
+
+    // printf("length: %d\n", path.path_length);
+    // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
+    // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
     
-    // path.path_length = path.path.size();
+    
     
     return path;
 }
@@ -101,11 +111,13 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
 
                     if (isDestination(neighbour, goal)) { // Set the Parent of the destination cell
                         cellDetails[n_ind].parent = { i, j };
-                        printf("The destination cell is found\n");
+                        // printf("The destination cell is found\n");
                         return tracePath(cellDetails, neighbour, mapWidth);
                     }
                     // If the successor is already on the closed list or if it is blocked, then ignore it.  Else do the following
-                    if (!closed_list[n_ind] && (distances(neighbour.first, neighbour.second) > 0)) {
+                    
+                    if (!closed_list[n_ind] && (distances(neighbour.first, neighbour.second) > params.minDistanceToObstacle)) {
+                        std::printf("Cell: %d, %d, D: %f\n", neighbour.first, neighbour.second, distances(neighbour.first, neighbour.second));
                         double gNew, hNew, fNew;
                         gNew = cellDetails[ind].g + 1.0;
                         hNew = get_cost_h(neighbour, goal);
@@ -137,7 +149,7 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
 
     }
 
-    std::printf("NO VALID PATH FOUND!!");
+    // std::printf("NO VALID PATH FOUND!!");
 
     return path;
 
@@ -156,6 +168,8 @@ std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width)
     bool done = false;
 
     while (!done){
+
+        // printf("CELL: %d, %d\n", c.first, c.second);
         
         int c_ind = get_index(c.first, c.second, width);
         Pair p = cellDetails[c_ind].parent;
@@ -168,26 +182,61 @@ std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width)
         path.push_back(p);
         c = p;
     }
+    // std::reverse(path.begin(),path.end());
     return path;
 
 
 }
 
+// // diagonal version
+// std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances){
+//     // return valid neighbors
+//     std::vector<Pair> pairs;
+//     for (int i=-1; i<= 1; i++){
+//         for (int j=-1; j<= 1; j++){
+//             if ((i!=0) && (j!=0)){
+//                 if (distances.isCellInGrid(x+i, y+j)){
+//                     Pair p(x+i, y+j);
+//                     pairs.push_back(p);
+//                 }
+//             }
+//         }
+//     }
+//     return pairs;
+// }
+
+// non-diagonal version
 std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances){
     // return valid neighbors
     std::vector<Pair> pairs;
-    for (int i=-1; i<= 1; i++){
-        for (int j=-1; j<= 1; j++){
-            if ((i!=0) && (j!=0)){
-                if (distances.isCellInGrid(x+i, y+j)){
-                    Pair p(x+i, y+j);
-                    pairs.push_back(p);
-                }
-            }
-        }
+
+    // +x 
+    if (distances.isCellInGrid(x + 1, y)){
+        Pair p(x+1, y);
+        pairs.push_back(p);
     }
+
+    // -x 
+    if (distances.isCellInGrid(x - 1, y)){
+        Pair p(x-1, y);
+        pairs.push_back(p);
+    }
+    
+    // +y 
+    if (distances.isCellInGrid(x, y+ 1)){
+        Pair p(x, y+1);
+        pairs.push_back(p);
+    }
+
+    // -y
+    if (distances.isCellInGrid(x, y-1)){
+        Pair p(x, y-1);
+        pairs.push_back(p);
+    }
+
     return pairs;
 }
+
 
 // int get_next_node_ind(std::vector<Node> open_queue){
 //     float lowest_cost = 1e6;

@@ -5,6 +5,8 @@
 #include <lcmtypes/pose_xyt_t.hpp>
 #include<queue>
 #include <tuple>
+#include <algorithm>
+
 
 // struct CellPath{
 //     st
