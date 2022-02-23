@@ -8,6 +8,7 @@ ObstacleDistanceGrid::ObstacleDistanceGrid(void)
 , metersPerCell_(0.05f)
 , cellsPerMeter_(20.0f)
 {
+    max_cell_distance = width_ * height_;
 }
 
 
@@ -19,28 +20,28 @@ std::vector<Point<unsigned int>> ObstacleDistanceGrid::get_adj8(Point<unsigned i
     unsigned int j = boundary.x;
     unsigned int i = boundary.y;
 
-    if(isCellInGrid(j, i+1) && distance(j, i+1) == -1)
+    if(isCellInGrid(j, i+1) && distance(j, i+1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j, i+1));
 
-    if(isCellInGrid(j+1, i+1) && distance(j+1, i+1) == -1)
+    if(isCellInGrid(j+1, i+1) && distance(j+1, i+1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j+1, i+1));
     
-    if(isCellInGrid(j+1, i) && distance(j+1, i) == -1)
+    if(isCellInGrid(j+1, i) && distance(j+1, i) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j+1, i));
 
-    if(isCellInGrid(j+1, i-1) && distance(j+1, i-1) == -1)
+    if(isCellInGrid(j+1, i-1) && distance(j+1, i-1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j+1, i-1));
     
-    if(isCellInGrid(j, i-1) && distance(j, i-1) == -1)
+    if(isCellInGrid(j, i-1) && distance(j, i-1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j, i-1));
 
-    if(isCellInGrid(j-1, i-1) && distance(j-1, i-1) == -1)
+    if(isCellInGrid(j-1, i-1) && distance(j-1, i-1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j-1, i-1));
 
-    if(isCellInGrid(j-1, i) && distance(j-1, i) == -1)
+    if(isCellInGrid(j-1, i) && distance(j-1, i) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j-1, i));
 
-    if(isCellInGrid(j-1, i+1) && distance(j-1, i+1) == -1)
+    if(isCellInGrid(j-1, i+1) && distance(j-1, i+1) == max_cell_distance)
         adj8.push_back(Point<unsigned int>(j-1, i+1));
 
 
@@ -76,7 +77,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 			    	boundary.push_back(Point<unsigned int>(j, i));
 		    	}
 		    	else{
-				distance(j, i) = -1;
+				distance(j, i) = max_cell_distance;
 		    	}
 
 			// distance(j, i) = 0;
@@ -84,7 +85,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 	    }
     }
 
-    
+
     while(1){
 	    int flag = 0;
 

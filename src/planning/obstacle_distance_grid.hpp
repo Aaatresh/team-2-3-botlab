@@ -82,6 +82,8 @@ public:
     // int pos_to_cell_y(float x);
     // float cell_to_pos_x(int x);
     // float cell_to_pos_y(int y);
+
+    unsigned int max_cell_distance;
     
 private:
     
