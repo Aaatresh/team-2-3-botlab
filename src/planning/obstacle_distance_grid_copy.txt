@@ -8,8 +8,7 @@ ObstacleDistanceGrid::ObstacleDistanceGrid(void)
 , metersPerCell_(0.05f)
 , cellsPerMeter_(20.0f)
 {
-    // max_cell_distance = width_ * height_;
-    // max_cell_distance = -1;
+    max_cell_distance = width_ * height_;
 }
 
 
@@ -52,8 +51,6 @@ std::vector<Point<unsigned int>> ObstacleDistanceGrid::get_adj8(Point<unsigned i
 void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 {
     resetGrid(map);
-
-    max_cell_distance = width_ * height_;
 
     // std::cout << "width: " << width_ << "\theight: " << height_ << "\n";
     
