@@ -304,7 +304,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     if (frontiers_.empty()){
         // Exploration complete so call A* to go home
-        
+        planner.planPath(currentPose_,  homePose_);
     }
 
     /////////////////////////////// End student code ///////////////////////////////
