@@ -39,7 +39,7 @@ robot_path_t MotionPlanner::planPath(const pose_xyt_t& start,
     }
     
     // Otherwise, use A* to find the path
-    return search_for_path(start, goal, distances_, searchParams);
+    return search_for_path(start, goal, planner.distances_, planner.searchParams);
 }
 
 
