@@ -243,8 +243,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
     *           explored more of the map.
     *       -- You will likely be able to see the frontier before actually reaching the end of the path leading to it.
     */
-    frontiers_ = find_map_frontiers(currentMap_, currentPose_);
-    currentPath_ = plan_path_to_frontier(frontiers, currentPose_, currentMap_, planner_);
+    frontiers_ = find_map_frontiers(currentMap_, currentPose_); //mine
+    currentPath_ = plan_path_to_frontier(frontiers, currentPose_, currentMap_, planner_); //mine
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
@@ -304,6 +304,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     if (frontiers_.empty()){
         // Exploration complete so call A* to go home
+        
     }
 
     /////////////////////////////// End student code ///////////////////////////////

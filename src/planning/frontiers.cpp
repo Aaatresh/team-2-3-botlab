@@ -134,7 +134,8 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     goal.y = frontiers[closestf].cells[0].y;
     goal.theta = robotPose.theta;  //need to give theta and searchParams and distances
     
-    search_for_path(robotPose, goal, planner.distances_, planner.searchParams_);
+    planner.planPath(robotPose, goal)
+    //search_for_path(robotPose, goal, planner.distances_, planner.searchParams_);
         // closestf is the index of the closest frontier
         // Now, need to plan the path to the center of the frontier
         // Call A* here till the midpoint of frontiers[closestf] or some cell inside that frontier 
