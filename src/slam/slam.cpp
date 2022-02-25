@@ -1,10 +1,13 @@
 #include <slam/slam.hpp>
 #include <slam/slam_channels.h>
 #include <mbot/mbot_channels.h>
+#include <common/time_util.h>
 #include <optitrack/optitrack_channels.h>
 #include <unistd.h>
 #include <cassert>
 #include <chrono>
+
+
 
 OccupancyGridSLAM::OccupancyGridSLAM(int         numParticles,
                                      int8_t      hitOddsIncrease,
@@ -258,13 +261,17 @@ void OccupancyGridSLAM::updateLocalization(void)
     if(haveMap_ && (mode_ != mapping_only))
     {
         previousPose_ = currentPose_;
+        int64_t time_before = utime_now();
         if(mode_ == action_only){
             currentPose_  = filter_.updateFilterActionOnly(currentOdometry_);
         }
         else{
             currentPose_  = filter_.updateFilter(currentOdometry_, currentScan_, map_);
         }
+        int64_t time_after = utime_now();
         
+        std::cout << time_before << "\t" << time_after << "\n";
+
         auto particles = filter_.particles();
 
         lcm_.publish(SLAM_POSE_CHANNEL, &currentPose_);
