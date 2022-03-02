@@ -96,7 +96,8 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
 
 std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width);
 
-
+int get_dir(Pair p0, Pair p1);
+std::vector<Pair> simplifyPath(std::vector<Pair> originalPath);
 
 
 

@@ -35,8 +35,8 @@
 ///////////////////////////////////////////////////////////
 
 const float k_omega = 0.7;
-const float v_desired = 0.8;
-const float w_max = 3.14;
+const float v_desired = 0.25;
+const float w_max = 3.14/8;
 const float kw_p = 1.0;
 const float kw_d = 1.0;
 
@@ -112,24 +112,24 @@ public:
         return {0, v, w};
     }
 
-/*
+
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
         return ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1));
     }
-*/
 
-    virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
-    {
-        // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
-        if ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1))
-	{
-		toggle = 0;
-		return 1;
-	}
-	else
-		return 0;
-    }
+
+    // virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
+    // {
+    //     // this just gets you to a desired location, but doesnt require it to turn to head in the right direction
+    //     if ((fabs(pose.x - target.x) < 0.1) && (fabs(pose.y - target.y) < 0.1))
+	// {
+	// 	toggle = 0;
+	// 	return 1;
+	// }
+	// else
+	// 	return 0;
+    // }
 };
 
 class TurnManeuverController : public ManeuverControllerBase
@@ -281,7 +281,7 @@ public:
         return {0, 0, w};
     }
 
-/*
+
     virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
     {
         // calculate error in heading
@@ -289,27 +289,34 @@ public:
         float dy = target.y - pose.y;
         float target_heading = atan2(dy, dx);
         float heading_error = angle_diff(pose.theta, target_heading);
+
+        // if (dx*dx + dy*dy <= 0.05*0.05){
+        //     return 1;
+        // }
         return (fabs(heading_error) < 0.05);
     }
-*/
 
-    virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
-    {
-        // calculate error in heading
-        float dx = target.x - pose.x;
-        float dy = target.y - pose.y;
-        float target_heading = atan2(dy, dx);
-        float heading_error = angle_diff(pose.theta, target_heading);
+
+    // virtual bool target_reached(const pose_xyt_t &pose, const pose_xyt_t &target) override
+    // {
+    //     // calculate error in heading
+    //     float dx = target.x - pose.x;
+    //     float dy = target.y - pose.y;
+    //     float target_heading = atan2(dy, dx);
+    //     float heading_error = angle_diff(pose.theta, target_heading);
+
+    //     // if (dx*dx + dy*dy <= 0.05*0.05){
+    //     //     return 1;
+    //     // }
 	
-	if (fabs(heading_error) < 0.05)
-	{
-		toggle = 0;
-		return 1;
-	}        
-	else
-		return 0;
-
-    }
+    //     if (fabs(heading_error) < 0.05)
+    //     {
+    //         toggle = 0;
+    //         return 1;
+    //     }        
+    //     else
+    //         return 0;
+    //     }
 };
 
 
@@ -360,7 +367,7 @@ public:
                 if (turn_controller.target_reached(pose, target))
                 {
                     state_ = DRIVE;
-		    sleep(1);
+		            sleep(1);
                 }
                 else
                 {
