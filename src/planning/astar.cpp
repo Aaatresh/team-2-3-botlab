@@ -21,7 +21,7 @@ robot_path_t search_for_path(pose_xyt_t start,
     // perform Astar in the grid
     Pair startCell(startPoint.x, startPoint.y);
     Pair goalCell(goalPoint.x, goalPoint.y);
-    std::vector<Pair> cellPath = search_for_path_grid(startCell, goalCell, distances,params);
+    std::vector<Pair> cellPath = simplify_path(search_for_path_grid(startCell, goalCell, distances,params));
 
     // convert back to robot path
     robot_path_t path;
@@ -55,6 +55,48 @@ robot_path_t search_for_path(pose_xyt_t start,
 
 int get_index(int x, int y, int width){
     return y*width + x; 
+}
+
+
+std::vector<Pair> simplify_path(std::vector<Pair> originalPath){
+
+    std::vector<Pair> newPath;
+    newPath.push_back(originalPath[0]);
+
+    int dir = getDir(originalPath[0], originalPath[1]);
+
+    for (size_t i = 0; i< originalPath.size()-1; i++){
+        int newDir = getDir(originalPath[i], originalPath[i+1]);
+        if (newDir != dir){
+            newPath.push_back(originalPath[i+1]);
+            dir = newDir;
+        }
+    }
+
+    newPath.push_back(originalPath.back());
+
+    return newPath;
+
+}
+
+int getDir(Pair start, Pair goal){
+    if ((start.first == goal.first + 1) && (start.second == goal.second)){
+        return 1;
+    }
+
+    if ((start.first == goal.first - 1) && (start.second == goal.second)){
+        return 2;
+    }
+
+    if ((start.first == goal.first) && (start.second == goal.second + 1)){
+        return 3;
+    }
+
+    if ((start.first == goal.first) && (start.second == goal.second - 1)){
+        return 4;
+    }
+
+    return 5;
 }
 
 std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
