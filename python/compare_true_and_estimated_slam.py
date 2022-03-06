@@ -53,11 +53,35 @@ for event in log:
         solution_ys.append(msg.y)
         solution_thetas.append(msg.theta)
 
-plt.plot(true_ts, true_xs, label="TRUE_POSE")
-plt.plot(solution_ts, solution_xs, label="SOLUTION_POSE")
-plt.plot(slam_ts, slam_xs, label="SLAM_POSE")
+# shift the zero-t
+t0 = true_ts[0]
+true_ts = [t - t0 for t in true_ts]
+slam_ts = [t - t0 for t in slam_ts]
+solution_ts = [t - t0 for t in solution_ts]
+
+
+# plots
+fig, ax = plt.subplots(3, 1,figsize=(6,10))
+
+ax[0].plot(true_ts, true_xs, label="TRUE_POSE")
+# ax[0].plot(solution_ts, solution_xs, label="SOLUTION_POSE")
+ax[0].plot(slam_ts, slam_xs, label="SLAM_POSE")
+ax[0].set_ylabel("x [m]")
+
+ax[1].plot(true_ts, true_ys, label="TRUE_POSE")
+# ax[1].plot(solution_ts, solution_ys, label="SOLUTION_POSE")
+ax[1].plot(slam_ts, slam_ys, label="SLAM_POSE")
+ax[1].set_ylabel("y [m]")
+
+ax[2].plot(true_ts, np.unwrap(true_thetas), label="TRUE_POSE")
+# ax[2].plot(solution_ts, solution_thetas, label="SOLUTION_POSE")
+ax[2].plot(slam_ts, np.unwrap(slam_thetas), label="SLAM_POSE")
+ax[2].set_ylabel("θ [rad]")
+
 plt.legend()
-plt.savefig("plot.png")
+plt.savefig("plot_200_particles.png")
+
+
 
 
 ## interpolate and then compute the rms

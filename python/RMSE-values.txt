@@ -1,0 +1,20 @@
+RMSE values for 50 particles:
+
+Max Error: xs:  0.290645098114795
+Max Error: ys:  0.3898661934783987
+Max Error: thetas:  1.2127678644232818
+RMSE: xs: 0.119290
+RMSE: ys: 0.174350
+RMSE: thetas: 0.131442
+
+
+
+
+RMSE values for 200 particles:
+
+Max Error: xs:  0.4526700489534767
+Max Error: ys:  0.5815970255807341
+Max Error: thetas:  1.232901902972822
+RMSE: xs: 0.191142
+RMSE: ys: 0.252697
+RMSE: thetas: 0.192820
