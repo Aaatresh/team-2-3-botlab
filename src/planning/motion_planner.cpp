@@ -33,7 +33,7 @@ robot_path_t MotionPlanner::planPath(const pose_xyt_t& start,
         failedPath.path_length = 1;
         failedPath.path.push_back(start);
 
-        std::cout << "INFO: path rejected due to invalid goal\n";        
+        // std::cout << "INFO: path rejected due to invalid goal\n";        
 
         return failedPath;
     }
@@ -45,7 +45,7 @@ robot_path_t MotionPlanner::planPath(const pose_xyt_t& start,
 
 robot_path_t MotionPlanner::planPath(const pose_xyt_t& start, const pose_xyt_t& goal) const
 {
-    std::printf("\n* planning path from %f, %f to %f, %f\n", start.x, start.y, goal.x, goal.y);
+    // std::printf("\n* planning path from %f, %f to %f, %f\n", start.x, start.y, goal.x, goal.y);
     return planPath(start, goal, searchParams_);
 }
 
@@ -76,7 +76,7 @@ bool MotionPlanner::isValidGoal(const pose_xyt_t& goal) const
         // std::printf("Distances: %f, Radius: %f", d, r);
 
         // std::printf("goal dist: %f", distances_(goalCell.x, goalCell.y));
-        std::printf(" YES IM IN THE GRID\n\n");
+        // std::printf(" YES IM IN THE GRID\n\n");
         return distances_(goalCell.x, goalCell.y) > params_.robotRadius;
     }
     

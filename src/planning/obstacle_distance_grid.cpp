@@ -72,7 +72,7 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 			
 			
 			if(map.logOdds(j, i) == 0){
-				distance(j, i) = 0;
+				// distance(j, i) = 0;
 			}
 		    	else if(map.logOdds(j, i) > 0){
 				distance(j, i) = 0;
