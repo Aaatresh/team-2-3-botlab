@@ -73,16 +73,6 @@ public:
     
     std::vector<Point<unsigned int>> get_adj8(Point<unsigned int> boundary, unsigned int distance_counter);
 
-    // int gridSize();
-    // void reset_closed_list();
-
-    // bool isClosed(int x, int y);
-
-    // int pos_to_cell_x(float x);
-    // int pos_to_cell_y(float x);
-    // float cell_to_pos_x(int x);
-    // float cell_to_pos_y(int y);
-
     unsigned int max_cell_distance;
     
 private:
