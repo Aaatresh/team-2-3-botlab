@@ -133,8 +133,8 @@ void Exploration::copyDataForUpdate(void)
     {
         homePose_ = incomingPose_;
         haveHomePose_ = true;
-        std::cout << "INFO: Exploration: Set home pose:" << homePose_.x << ',' << homePose_.y << ',' 
-            << homePose_.theta << '\n';
+        // std::cout << "INFO: Exploration: Set home pose:" << homePose_.x << ',' << homePose_.y << ',' 
+            // << homePose_.theta << '\n';
     }
 }
 
@@ -146,12 +146,12 @@ void Exploration::executeStateMachine(void)
     
     // Save the path from the previous iteration to determine if a new path was created and needs to be published
     robot_path_t previousPath = currentPath_;
-    printf("\n exec state: %d, current path length: %d",state_, currentPath_.path_length);
+    // printf("\n exec state: %d, current path length: %d",state_, currentPath_.path_length);
     
     // Run the state machine until the state remains the same after an iteration of the loop
     do
     {
-        printf("\n exec state: %d\n",state_);
+        // printf("\n exec state: %d\n",state_);
         switch(state_)
         {
             case exploration_status_t::STATE_INITIALIZING:
@@ -182,13 +182,13 @@ void Exploration::executeStateMachine(void)
     //if path confirmation was not received, resend path
     if(!pathReceived_)
     {
-        std::cout << "the current path was not received by motion_controller, attempting to send again:\n";
+        // std::cout << "the current path was not received by motion_controller, attempting to send again:\n";
 
-        std::cout << "timestamp: " << currentPath_.utime << "\n";
+        // std::cout << "timestamp: " << currentPath_.utime << "\n";
 
-        for(auto pose : currentPath_.path){
-            std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
-        }std::cout << "\n";
+        // for(auto pose : currentPath_.path){
+        //     std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
+        // }std::cout << "\n";
 
         lcmInstance_->publish(CONTROLLER_PATH_CHANNEL, &currentPath_);
     }
@@ -197,13 +197,13 @@ void Exploration::executeStateMachine(void)
     if(previousPath.path != currentPath_.path)
     { 
 
-        std::cout << "INFO: Exploration: A new path was created on this iteration. Sending to Mbot:\n";
+        // std::cout << "INFO: Exploration: A new path was created on this iteration. Sending to Mbot:\n";
 
-        std::cout << "path timestamp: " << currentPath_.utime << "\npath: ";
+        // std::cout << "path timestamp: " << currentPath_.utime << "\npath: ";
 
-        for(auto pose : currentPath_.path){
-            std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
-        }std::cout << "\n";
+        // for(auto pose : currentPath_.path){
+        //     std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
+        // }std::cout << "\n";
 
         lcmInstance_->publish(CONTROLLER_PATH_CHANNEL, &currentPath_);
 
@@ -248,14 +248,14 @@ int8_t Exploration::executeExploringMap(bool initialize)
     */
 
     
-    std::printf("\n****TESTING MODE! NUM FRONTIERS: %d*****\n", frontiers_.size());
+    // std::printf("\n****TESTING MODE! NUM FRONTIERS: %d*****\n", frontiers_.size());
 
     
     
     // if (initialize){
         frontiers_ = find_map_frontiers(currentMap_, currentPose_); //mine    
         currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_); //mine
-        printf("FOUND CURRENT PATH LENGTH: %d", currentPath_.path_length);
+        // printf("FOUND CURRENT PATH LENGTH: %d", currentPath_.path_length);
     // }
 
     
@@ -290,7 +290,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
 
-    std::printf(" \n \n \n \n CURRENT STATE: %d \n \n \n \n ", status.state);
+    // std::printf(" \n \n \n \n CURRENT STATE: %d \n \n \n \n ", status.state);
     
     ////////////////////////////   Determine the next state    ////////////////////////
     switch(status.status)

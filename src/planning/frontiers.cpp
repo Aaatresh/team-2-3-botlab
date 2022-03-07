@@ -121,7 +121,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     //     return proposedPath;
     // }
 
-    float alpha = 0.8;
+    float alpha = 0.9;
 
     std::printf("num of frontiers: %d\n", frontiers.size());
 
@@ -137,7 +137,7 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
 
             robot_path_t proposedPath = planner.planPath(robotPose, proposed);
             if (proposedPath.path_length > 1){
-                std::printf("FOUND PATH of length %d", proposedPath.path_length);
+                std::printf("FOUND PATH of length %d\n", proposedPath.path_length);
                 return proposedPath;
             }
             

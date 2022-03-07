@@ -10,13 +10,13 @@ robot_path_t search_for_path(pose_xyt_t start,
                              const SearchParams& params)
 {
 
-    std::printf("RUNNING ASTAR!\n");
+    // std::printf("RUNNING ASTAR!\n");
     // std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
 
     auto startPoint = global_position_to_grid_cell(Point<float>(start.x, start.y), distances);
     auto goalPoint = global_position_to_grid_cell(Point<float>(goal.x, goal.y), distances);
 
-    std::printf("ASTAR MAP WIDTH: %d, HEIGHT %d\n", distances.widthInCells(), distances.heightInCells());
+    // std::printf("ASTAR MAP WIDTH: %d, HEIGHT %d\n", distances.widthInCells(), distances.heightInCells());
 
 
     // perform Astar in the grid
@@ -45,9 +45,9 @@ robot_path_t search_for_path(pose_xyt_t start,
 
     path.path_length = path.path.size();
 
-    printf("ASTAR length: %d\n", path.path_length);
-    printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
-    printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
+    // printf("ASTAR length: %d\n", path.path_length);
+    // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
+    // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
     
     
     
