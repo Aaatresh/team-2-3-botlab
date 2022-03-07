@@ -57,8 +57,6 @@ int get_index(int x, int y, int width){
     return y*width + x; 
 }
 
-<<<<<<< src/planning/astar.cpp
-
 std::vector<Pair> simplify_path(std::vector<Pair> originalPath){
 
     std::vector<Pair> newPath;
