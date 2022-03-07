@@ -100,5 +100,4 @@ int get_dir(Pair p0, Pair p1);
 std::vector<Pair> simplifyPath(std::vector<Pair> originalPath);
 
 
-
 #endif // PLANNING_ASTAR_HPP
