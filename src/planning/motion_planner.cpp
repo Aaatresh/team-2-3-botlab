@@ -45,6 +45,7 @@ robot_path_t MotionPlanner::planPath(const pose_xyt_t& start,
 
 robot_path_t MotionPlanner::planPath(const pose_xyt_t& start, const pose_xyt_t& goal) const
 {
+    std::printf("\n* planning path from %f, %f to %f, %f\n", start.x, start.y, goal.x, goal.y);
     return planPath(start, goal, searchParams_);
 }
 
@@ -54,11 +55,14 @@ bool MotionPlanner::isValidGoal(const pose_xyt_t& goal) const
     float dx = goal.x - prev_goal.x, dy = goal.y - prev_goal.y;
     float distanceFromPrev = std::sqrt(dx * dx + dy * dy);
 
+    // std::cout << "got here!!\n";
     //if there's more than 1 frontier, don't go to a target that is within a robot diameter of the current pose
     if(num_frontiers != 1 && distanceFromPrev < 2 * searchParams_.minDistanceToObstacle) return false;
 
-    
+    // std::cout << "first check passed!\n";
     auto goalCell = global_position_to_grid_cell(Point<double>(goal.x, goal.y), distances_);
+
+    // std::printf("DISTACES WIDTH: %d, HEIGHT: %d", distances_.widthInCells(), distances_.heightInCells());
 
     // A valid goal is in the grid
     if(distances_.isCellInGrid(goalCell.x, goalCell.y))
@@ -72,10 +76,12 @@ bool MotionPlanner::isValidGoal(const pose_xyt_t& goal) const
         // std::printf("Distances: %f, Radius: %f", d, r);
 
         // std::printf("goal dist: %f", distances_(goalCell.x, goalCell.y));
-
+        std::printf(" YES IM IN THE GRID\n\n");
         return distances_(goalCell.x, goalCell.y) > params_.robotRadius;
     }
     
+
+    std::cout << "****************** cell isnt in grid!! *********************\n";
     // A goal must be in the map for the robot to reach it
     return false;
 }

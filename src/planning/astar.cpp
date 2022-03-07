@@ -9,19 +9,20 @@ robot_path_t search_for_path(pose_xyt_t start,
                              const ObstacleDistanceGrid& distances,
                              const SearchParams& params)
 {
-    ////////////////// TODO: Implement your A* search here //////////////////////////
 
-    // std::printf("RUNNING ASTAR!\n");
+    std::printf("RUNNING ASTAR!\n");
     // std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
 
     auto startPoint = global_position_to_grid_cell(Point<float>(start.x, start.y), distances);
     auto goalPoint = global_position_to_grid_cell(Point<float>(goal.x, goal.y), distances);
 
+    std::printf("ASTAR MAP WIDTH: %d, HEIGHT %d\n", distances.widthInCells(), distances.heightInCells());
+
 
     // perform Astar in the grid
     Pair startCell(startPoint.x, startPoint.y);
     Pair goalCell(goalPoint.x, goalPoint.y);
-    std::vector<Pair> cellPath = simplify_path(search_for_path_grid(startCell, goalCell, distances,params));
+    std::vector<Pair> cellPath = simplifyPath(search_for_path_grid(startCell, goalCell, distances,params));
 
     // convert back to robot path
     robot_path_t path;
@@ -44,9 +45,9 @@ robot_path_t search_for_path(pose_xyt_t start,
 
     path.path_length = path.path.size();
 
-    // // printf("length: %d\n", path.path_length);
-    // // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
-    // // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
+    printf("ASTAR length: %d\n", path.path_length);
+    printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
+    printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
     
     
     
@@ -57,51 +58,15 @@ int get_index(int x, int y, int width){
     return y*width + x; 
 }
 
-std::vector<Pair> simplify_path(std::vector<Pair> originalPath){
 
-    std::vector<Pair> newPath;
-    newPath.push_back(originalPath[0]);
-
-    int dir = getDir(originalPath[0], originalPath[1]);
-
-    for (size_t i = 0; i< originalPath.size()-1; i++){
-        int newDir = getDir(originalPath[i], originalPath[i+1]);
-        if (newDir != dir){
-            newPath.push_back(originalPath[i+1]);
-            dir = newDir;
-        }
-    }
-
-    newPath.push_back(originalPath.back());
-
-    return newPath;
-
-}
-
-int getDir(Pair start, Pair goal){
-    if ((start.first == goal.first + 1) && (start.second == goal.second)){
-        return 1;
-    }
-
-    if ((start.first == goal.first - 1) && (start.second == goal.second)){
-        return 2;
-    }
-
-    if ((start.first == goal.first) && (start.second == goal.second + 1)){
-        return 3;
-    }
-
-    if ((start.first == goal.first) && (start.second == goal.second - 1)){
-        return 4;
-    }
-
-    return 5;
-}
 
 std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
                             const ObstacleDistanceGrid& distances,
                             const SearchParams& params)
 {
+
+    std::printf("GRID: REQUESTED start %d, %d, goal %d, %d\n", start.first, start.second, goal.first, goal.second);
+    std::printf("MIN DIST: %f", params.minDistanceToObstacle);
     std::vector<Pair> path;
 
     int gridSize = distances.gridSize();
@@ -195,7 +160,7 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
         }
     }
 
-    // std::printf("NO VALID PATH FOUND!!");
+    std::printf("NO VALID PATH FOUND!!");
 
     return path;
 
@@ -274,4 +239,42 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
 float get_cost_h(Pair n, Pair goal){
     // return std::sqrt(std::pow(goal.first - n.first, 2) + std::pow(goal.second - n.second, 2));
     return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
+}
+
+
+
+std::vector<Pair> simplifyPath(std::vector<Pair> originalPath){
+
+    if (originalPath.size() <= 1) return originalPath;
+
+    std::vector<Pair> newPath;
+
+    // newPath.push_back(originalPath[0]);
+    int dir = -1; //get_dir(originalPath[0], originalPath[1]);
+    
+    for (size_t n = 0; n < originalPath.size()-1; n++){
+        int newDir = get_dir(originalPath[n], originalPath[n+1]);
+        // std::printf("old dir: %d NEW DIR: %d\n", dir, newDir);
+        if (newDir != dir){
+            // std::printf("PUSHING\n");
+
+            newPath.push_back(originalPath[n]);
+            dir = newDir;
+        }
+
+    }
+    newPath.push_back(originalPath.back());
+
+    std::printf("ORIGINAL_LENGTH: %d, NEW_LENGTH: %d \n \n ", originalPath.size(), newPath.size());
+
+    return newPath;
+
+}
+
+int get_dir(Pair p0, Pair p1){
+    if (p0.first == p1.first + 1 && p0.second == p1.second) return 1;
+    if (p0.first == p1.first - 1 && p0.second == p1.second) return 2;
+    if (p0.first == p1.first && p0.second == p1.second + 1) return 3;
+    if (p0.first == p1.first && p0.second == p1.second - 1) return 4;
+    return 5;
 }

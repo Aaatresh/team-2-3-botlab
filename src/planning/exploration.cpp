@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <cassert>
 
-const float kReachedPositionThreshold = 0.05f;  // must get within this distance of a position for it to be explored
+const float kReachedPositionThreshold = 0.1f;  // must get within this distance of a position for it to be explored
 
 // Define an equality operator for poses to allow direct comparison of two paths
 bool operator==(const pose_xyt_t& lhs, const pose_xyt_t& rhs)
@@ -47,7 +47,7 @@ Exploration::Exploration(int32_t teamNumber,
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
     
     MotionPlannerParams params;
-    params.robotRadius = 0.2;
+    params.robotRadius = 0.1; // CHANGED MIN DIST HERE!
     planner_.setParams(params);
 }
 
@@ -120,6 +120,7 @@ void Exploration::copyDataForUpdate(void)
     if(haveNewMap_)
     {
         currentMap_ = incomingMap_;
+        planner_.setMap(currentMap_);
         haveNewMap_ = false;
     }
     
@@ -145,10 +146,12 @@ void Exploration::executeStateMachine(void)
     
     // Save the path from the previous iteration to determine if a new path was created and needs to be published
     robot_path_t previousPath = currentPath_;
+    printf("\n exec state: %d, current path length: %d",state_, currentPath_.path_length);
     
     // Run the state machine until the state remains the same after an iteration of the loop
     do
     {
+        printf("\n exec state: %d\n",state_);
         switch(state_)
         {
             case exploration_status_t::STATE_INITIALIZING:
@@ -243,7 +246,22 @@ int8_t Exploration::executeExploringMap(bool initialize)
     *           explored more of the map.
     *       -- You will likely be able to see the frontier before actually reaching the end of the path leading to it.
     */
+
     
+    std::printf("\n****TESTING MODE! NUM FRONTIERS: %d*****\n", frontiers_.size());
+
+    
+    
+    // if (initialize){
+        frontiers_ = find_map_frontiers(currentMap_, currentPose_); //mine    
+        currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_); //mine
+        printf("FOUND CURRENT PATH LENGTH: %d", currentPath_.path_length);
+    // }
+
+    
+    
+    // if(frontiers_.empty() == false)
+    //     currentPath_ = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_); //mine
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
@@ -252,11 +270,13 @@ int8_t Exploration::executeExploringMap(bool initialize)
     status.team_number = teamNumber_;
     status.state = exploration_status_t::STATE_EXPLORING_MAP;
     
+    
     // If no frontiers remain, then exploration is complete
-    if(frontiers_.empty())
-    {
-        status.status = exploration_status_t::STATUS_COMPLETE;
-    }
+    if (false){}
+    // if(frontiers_.empty())
+    // {
+    //     status.status = exploration_status_t::STATUS_COMPLETE;
+    // }
     // Else if there's a path to follow, then we're still in the process of exploring
     else if(currentPath_.path.size() > 1)
     {
@@ -269,6 +289,8 @@ int8_t Exploration::executeExploringMap(bool initialize)
     }
     
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
+
+    std::printf(" \n \n \n \n CURRENT STATE: %d \n \n \n \n ", status.state);
     
     ////////////////////////////   Determine the next state    ////////////////////////
     switch(status.status)
@@ -301,8 +323,10 @@ int8_t Exploration::executeReturningHome(bool initialize)
     *       (1) dist(currentPose_, targetPose_) < kReachedPositionThreshold  :  reached the home pose
     *       (2) currentPath_.path_length > 1  :  currently following a path to the home pose
     */
-    
-
+    // if (frontiers_.empty()){
+    //     // Exploration complete so call A* to go home
+    //     planner_.planPath(currentPose_,  homePose_);
+    // }
 
     /////////////////////////////// End student code ///////////////////////////////
     
