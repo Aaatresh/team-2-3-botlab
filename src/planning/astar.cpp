@@ -58,7 +58,9 @@ int get_index(int x, int y, int width){
     return y*width + x; 
 }
 
-std::vector<Pair> search_for_path_grid(Pair start, const Pair goal,
+
+
+std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
                             const ObstacleDistanceGrid& distances,
                             const SearchParams& params)
 {
