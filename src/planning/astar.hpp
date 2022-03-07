@@ -97,7 +97,8 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
 std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width);
 
 
-
+int getDir(Pair start, Pair goal);
+std::vector<Pair> simplify_path(std::vector<Pair> originalPath);
 
 
 #endif // PLANNING_ASTAR_HPP
