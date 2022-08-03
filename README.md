@@ -16,7 +16,7 @@ Bone Blue board allows high level control algorithms and SLAM to be deployed and
 ```
 
 ### Executing the code
-Run ```launch_botlab.sh```. 
+Run ```launch_botlab.sh``` to run the motion controller and SLAM scripts, and also launch a GUI interface for more visualization. 
 
 ## Contributors
 * Anirudh Ashok Aatresh ([aaatresh@umich.edu](mailto:aaatresh@umich.edu))
