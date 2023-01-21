@@ -10,22 +10,8 @@
 #include <algorithm>
 #include <common/grid_utils.hpp>
 
-// struct CellPath{
-//     st
-//     // std::vector<int> xs;
-//     // std::vector<int> ys;
-// };
-
 // create custom types
 typedef std::pair<int, int> Pair;
-// struct Pair{
-//     int x;
-//     int y;
-//     Pair(int xx, int yy)
-//         : x(xx)
-//         , y(yy)
-//     {}
-// };
 typedef std::tuple<double, int, int> Tuple;
 
 struct Cell {

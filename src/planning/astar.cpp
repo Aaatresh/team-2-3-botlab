@@ -9,15 +9,8 @@ robot_path_t search_for_path(pose_xyt_t start,
                              const ObstacleDistanceGrid& distances,
                              const SearchParams& params)
 {
-
-    // std::printf("RUNNING ASTAR!\n");
-    // std::printf("Starting Astar, using minDist: %f\n", params.minDistanceToObstacle);
-
     auto startPoint = global_position_to_grid_cell(Point<float>(start.x, start.y), distances);
     auto goalPoint = global_position_to_grid_cell(Point<float>(goal.x, goal.y), distances);
-
-    // std::printf("ASTAR MAP WIDTH: %d, HEIGHT %d\n", distances.widthInCells(), distances.heightInCells());
-
 
     // perform Astar in the grid
     Pair startCell(startPoint.x, startPoint.y);
@@ -44,12 +37,6 @@ robot_path_t search_for_path(pose_xyt_t start,
     }
 
     path.path_length = path.path.size();
-
-    // printf("ASTAR length: %d\n", path.path_length);
-    // printf("START POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", start.x, start.y, path.path[0].x, path.path[0].y);
-    // printf("END POSE: REQUESTED: %f, %f, FOUND: %f, %f\n", goal.x, goal.y, path.path[path.path_length-1].x, path.path[path.path_length-1].y);
-    
-    
     
     return path;
 }
@@ -73,10 +60,6 @@ std::vector<Pair> search_for_path_grid(Pair start, Pair goal,
     int const mapWidth = distances.widthInCells();
     // reset all cells to closed
     std::vector<bool> closed_list(gridSize, false);
-    // closed_list.resize(gridSize);
-    // for (size_t i = 0; i<= closed_list.size(); i++){
-    //     closed_list[i] = false;
-    // }
 
     // create cell-details array
     std::vector<Cell> cellDetails (gridSize);
@@ -194,9 +177,7 @@ std::vector<Pair> tracePath(std::vector<Cell> cellDetails, Pair goal, int width)
     
     return path;
 
-
 }
-
 
 // non-diagonal version
 std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances){
@@ -228,11 +209,8 @@ std::vector<Pair> neighbors(int x, int y, const ObstacleDistanceGrid& distances)
         }
     }
 
-    
-
     return pairs;
 }
-
 
 
 // return the estimated cost to go
@@ -240,7 +218,6 @@ float get_cost_h(Pair n, Pair goal){
     // return std::sqrt(std::pow(goal.first - n.first, 2) + std::pow(goal.second - n.second, 2));
     return std::abs(goal.first - n.first) + std::abs(goal.second - n.second);
 }
-
 
 
 std::vector<Pair> simplifyPath(std::vector<Pair> originalPath){

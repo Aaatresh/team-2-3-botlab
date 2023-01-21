@@ -1,3 +1,5 @@
+""" Script to teleoperate the robot and visualize onboard camera frames """
+
 import pygame
 from pygame.locals import *
 from picamera.array import PiRGBArray

@@ -1,3 +1,5 @@
+""" Script to publish waypoints in the shape of a square on an LCM topic """
+
 import lcm
 import sys
 import numpy as np

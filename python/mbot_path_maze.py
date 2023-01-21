@@ -1,3 +1,5 @@
+""" Script to publish waypoints through a maze on an LCM topic """
+
 import lcm
 import sys
 import numpy as np

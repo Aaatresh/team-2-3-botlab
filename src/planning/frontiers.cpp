@@ -149,85 +149,6 @@ robot_path_t plan_path_to_frontier(const std::vector<frontier_t>& frontiers,
     robot_path_t emptyPath;
     return emptyPath;
     
-
-
-    
-
-    
-
-
-
-    // std::printf("MAP WIDTH: %d\n", map.widthInCells());
-    // std::printf("MAP HEIGHT: %d\n", map.heightInCells());
-
-    // for (auto f: frontiers){
-    //     std::printf("\n** FRONTIER **\n");
-    //     std::printf("First Cell Pos: (%f, %f)\n", f.cells[0].x,  f.cells[0].y);
-
-    //     // create a pose
-    //     pose_xyt_t proposed;
-    //     proposed.x = f.cells[0].x;
-    //     proposed.y = f.cells[0].y;
-    //     proposed.theta = 0.0;
-    //     proposed.utime = robotPose.utime;
-        
-        
-    //     std::printf("FOUND VALID GOAL! CREATING PATH\n");
-    //     emptyPath = planner.planPath(robotPose, proposed);
-    //     std::printf("FOUND PATH WITH LENGTH: %d", emptyPath.path_length);
-    //     if (emptyPath.path_length  > 1){    
-    //         // std::printf("FOUND VALID GOAL\n");
-    //         return emptyPath;
-    //     }
-    // }
-
-
-    
-
-//     int i,j;
-//     float x_mid = 0.0;
-//     float y_mid = 0.0;
-//     float ldist = -1.0;
-//     float cdist;
-//     int closestf = -1;
-//     for(i = 0; i < frontiers.size(); i++){
-//         x_mid = 0.0;
-//         y_mid = 0.0;
-//         frontier_t current = frontiers[i];
-        
-        
-//         for(j = 0; j < current.cells.size(); j++){
-//             x_mid = x_mid + current.cells[j].x;
-//             y_mid = y_mid + current.cells[j].y;
-//         }
-//         x_mid = x_mid / current.cells.size();
-//         y_mid = y_mid / current.cells.size();
-//         cdist = distance_between_points(Point<float>(robotPose.x, robotPose.y), 
-//                                         Point<float>(x_mid, y_mid));
-//         pose_xyt_t proposedTargetPose;
-//         proposedTargetPose.x = x_mid;
-//         proposedTargetPose.y = y_mid;
-//         if (!planner.isValidGoal(proposedTargetPose)) continue;
-//         if(ldist == -1.0){
-//             ldist = cdist;
-//             closestf = i;
-//         } else if (ldist > cdist) {
-//             ldist = cdist;
-//             closestf = i;
-//         }
-//    }
-
-//     pose_xyt_t goal;
-//     goal.x = frontiers[closestf].cells[0].x;
-//     goal.y = frontiers[closestf].cells[0].y;
-//     goal.theta = robotPose.theta;  //need to give theta and searchParams and distances
-    
-//     planner.planPath(robotPose, goal);
-//     //search_for_path(robotPose, goal, planner.distances_, planner.searchParams_);
-//         // closestf is the index of the closest frontier
-//         // Now, need to plan the path to the center of the frontier
-//         // Call A* here till the midpoint of frontiers[closestf] or some cell inside that frontier 
-    
     return emptyPath;
 }
 
@@ -247,10 +168,6 @@ bool is_frontier_cell(int x, int y, const OccupancyGrid& map)
     const int xDeltas[] = { -1, 1, 0, 0 };
     const int yDeltas[] = { 0, 0, 1, -1 };
 
-    // const int kNumNeighbors = 8;
-    // const int xDeltas[] = { -1, 1, 0, 0, -2, 2, 0, 0 };
-    // const int yDeltas[] = { 0, 0, 1, -1 , 0, 0, 2, -2};
-    
     for(int n = 0; n < kNumNeighbors; ++n)
     {
         // If any of the neighbors are free, then it's a frontier

@@ -15,7 +15,6 @@ OccupancyGrid::OccupancyGrid(void)
 {
 }
 
-
 OccupancyGrid::OccupancyGrid(float widthInMeters,
                              float heightInMeters,
                              float metersPerCell)
@@ -87,7 +86,6 @@ void OccupancyGrid::setLogOdds(int x, int y, CellOdds value)
     }
 }
 
-
 occupancy_grid_t OccupancyGrid::toLCM(void) const
 {
     occupancy_grid_t grid;
@@ -102,7 +100,6 @@ occupancy_grid_t OccupancyGrid::toLCM(void) const
     
     return grid;
 }
-
 
 void OccupancyGrid::fromLCM(const occupancy_grid_t& gridMessage)
 {

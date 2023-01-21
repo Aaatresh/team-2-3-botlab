@@ -1,3 +1,5 @@
+""" Script to teleoperate the robot """
+
 import pygame
 from pygame.locals import *
 import time

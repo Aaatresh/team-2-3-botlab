@@ -13,8 +13,6 @@ Mapping::Mapping(float maxLaserDistance, int8_t hitOdds, int8_t missOdds)
 }
 
 
-
-
 void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGrid& map)
 {
 
@@ -25,9 +23,6 @@ void Mapping::updateMap(const lidar_t& scan, const pose_xyt_t& pose, OccupancyGr
         previous_pose_.utime = pose.utime;
         initialised_previous_pose = true;
     }
-    // printf("RECEIVED NEW SCAN!\n");
-    // printf("Previous Pose: %f, %f, %f", previous_pose_.x, previous_pose_.y, previous_pose_.theta);
-    // printf("New Pose: %f, %f, %f \n", pose.x, pose.y, pose.theta);
 
     // MovingLaserScan adj_scan = MovingLaserScan(scan,previous_pose_, pose, 1);
     MovingLaserScan adj_scan = MovingLaserScan(scan, previous_pose_, pose, 1);

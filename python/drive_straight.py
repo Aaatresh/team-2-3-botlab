@@ -1,3 +1,5 @@
+""" Script to publish waypoints on an LCM topic """
+
 import lcm
 import sys
 import numpy as np
@@ -7,8 +9,8 @@ from lcmtypes import pose_xyt_t, robot_path_t
 
 lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
 
-
 L = 1.5
+
 # x, y, theta, where theta indicates the direction to be pointed when reaching waypoint
 waypoints = [
   (0,0,0),

@@ -182,28 +182,12 @@ void Exploration::executeStateMachine(void)
     //if path confirmation was not received, resend path
     if(!pathReceived_)
     {
-        // std::cout << "the current path was not received by motion_controller, attempting to send again:\n";
-
-        // std::cout << "timestamp: " << currentPath_.utime << "\n";
-
-        // for(auto pose : currentPath_.path){
-        //     std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
-        // }std::cout << "\n";
-
         lcmInstance_->publish(CONTROLLER_PATH_CHANNEL, &currentPath_);
     }
 
     //if path changed, send current path
     if(previousPath.path != currentPath_.path)
     { 
-
-        // std::cout << "INFO: Exploration: A new path was created on this iteration. Sending to Mbot:\n";
-
-        // std::cout << "path timestamp: " << currentPath_.utime << "\npath: ";
-
-        // for(auto pose : currentPath_.path){
-        //     std::cout << "(" << pose.x << "," << pose.y << "," << pose.theta << "); ";
-        // }std::cout << "\n";
 
         lcmInstance_->publish(CONTROLLER_PATH_CHANNEL, &currentPath_);
 

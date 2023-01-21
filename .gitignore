@@ -12,6 +12,9 @@ lcmtypes/*.h
 lcmtypes/*.py
 lcmtypes/*.o
 
+# Pycharm meta files
+.idea
+
 #######################################
 # LCM
 #######################################

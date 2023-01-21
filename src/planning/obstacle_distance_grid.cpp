@@ -55,8 +55,6 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 
     max_cell_distance = width_ * height_;
 
-    // std::cout << "width: " << width_ << "\theight: " << height_ << "\n";
-    
     ///////////// TODO: Implement an algorithm to mark the distance to the nearest obstacle for every cell in the map.
 
     // declare boundary and new_boundary
@@ -83,7 +81,6 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 				distance(j, i) = max_cell_distance;
 		    	}
 
-			// distance(j, i) = 0;
 		}
 	    }
     }
@@ -94,24 +91,11 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 
 	    char input = 0;
 
-	    // std::cout << "inside while\n";
-	    // std::cout << "Boundary size: " << boundary.size() << "\n";
-
 	    for(int k=0; k < boundary.size(); k++){
-		    // std::cout << "\titerating through boundary\n";
 
 		    Point<unsigned int> boundary_point = boundary[k];
 
 		    adj8 = get_adj8(boundary_point, distance_counter);
-		
-		    // std::cout << "size of adj8: " << adj8.size() << "\n";
-		    // std::cout << "iteration " << k << "\n";
-	
-		    // printing elements of adj8
-		    /*for(int g=0; g < adj8.size(); g++){
-		    	std::cout << adj8[g] << " ";
-		    }*/
-		    // std::cout << "\n******************************\n";
 
 		    if(adj8.empty() == false){
 		        flag = 1;
@@ -126,19 +110,13 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 		    }
 
 	    }
-	    // std::cout << "iteration through boudary completed\n";
-	    // std::cin >> input;
-
 
 	    if(flag == 0){
-		// std::cout << "flag = 0\n";
-		// std::cin >> input;
 		break;
 	    }
-	    // std::cout << "old boundary size: " << boundary.size() << "\n";
+
 	    boundary = new_boundary;
-	    // std::cout << "new boundary size: " << boundary.size() << "\n";
-	    // std::cin >> input;
+
 	    new_boundary.clear();
 	    distance_counter++;
 
@@ -147,57 +125,6 @@ void ObstacleDistanceGrid::setDistances(const OccupancyGrid& map)
 	    }
 
     }
-
-    // printf("//////////////////////\n");
-
-    /*
-    for(unsigned long i=0; i <= height_; i++){	
-
-	for(unsigned long j=0; j <= width_; j++){
-		
-		if(isCellInGrid(j, i))
-		{
-
-			if(map.logOdds(j, i) >= 0)
-			{
-				distance(j, i) = 0;		
-			}
-			else
-			{
-				unsigned long add_factor = 1;
-				while(1)
-				{
-					if((isCellInGrid(j + add_factor, i) && map.logOdds(j + add_factor, i) > 0) ||
-					   (isCellInGrid(j, i + add_factor) && map.logOdds(j, i + add_factor) > 0) ||			
-					   (isCellInGrid(j - add_factor, i) && map.logOdds(j - add_factor, i) > 0) ||			
-					   (isCellInGrid(j, i - add_factor) && map.logOdds(j, i - add_factor) > 0))
-					{
-						distance(j, i) = add_factor * 0.1;
-						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
-						break;
-					}			
-					else
-						add_factor++;
-
-					if(add_factor > std::max(height_, width_))
-					{
-						distance(j, i) = std::max(height_, width_) * 0.1;
-						// printf("distance(%lu, %lu): %f\n", j, i, distance(j, i));
-						break;
-					}
-	
-				}	
-
-			}
-
-			// distance(i, j) = 0.4;
-		
-		}
-
-	}
-
-    }*/
-
 
 }
 
@@ -228,15 +155,3 @@ void ObstacleDistanceGrid::resetGrid(const OccupancyGrid& map)
     cells_.resize(width_ * height_);
     // cells_closed_.resize(width_ * height_);
 }
-
-// void ObstacleDistanceGrid::reset_closed_list(){
-//     // reset all cells to be closed at the start
-//     for (size_t i=0; i< cells_closed_.size(); i++){
-//         cells_closed_[i] = false;
-//     }
-// }
-
-
-// int ObstacleDistanceGrid::gridSize(){
-//     return width_ * height_;
-// }
