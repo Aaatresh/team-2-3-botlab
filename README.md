@@ -17,7 +17,7 @@ The MobileBot repository that makes up the other half of this code base can be f
 ```
 
 ### Executing the code
-Run ```launch_botlab.sh``` to run the motion controller and SLAM scripts, and also launch a GUI interface for more visualization. 
+Run ```launch_botlab.sh``` to run the motion controller and SLAM scripts and launch a GUI interface for more visualization. 
 
 ## Contributors
 * Anirudh Ashok Aatresh ([aaatresh@umich.edu](mailto:aaatresh@umich.edu))
